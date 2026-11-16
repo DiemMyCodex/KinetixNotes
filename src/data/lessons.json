@@ -447,5 +447,20 @@
     "quiz": "Trong một hệ thống /swarm gồm 1 Orchestrator (Nhạc trưởng) và 3 Worker (Thợ con), tại sao mỗi Worker lại cần có một tờ giấy nháp Context Window riêng biệt thay vì dùng chung một tờ giấy nháp khổng lồ?",
     "answer": "Để tránh Context Pollution (Ô nhiễm ngữ cảnh): mỗi Worker chỉ cần đọc đúng file và nhiệm vụ của mình trên tờ giấy sạch, giúp Attention tập trung tối đa và tiết kiệm cực nhiều Token!",
     "createdAt": "2026-11-16T18:13:52.912Z"
+  },
+  {
+    "id": 31,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 13: Structured Outputs (Đầu ra có cấu trúc) & JSON Schema (Khuôn mẫu dữ liệu)",
+    "summary": "Làm sao ép một cỗ máy đoán chữ ngẫu nhiên luôn trả về đúng từng dấu ngoặc nhọn JSON để code bên ngoài đọc không bị sập.",
+    "points": [
+      "1. Vấn đề khi nối AI vào phần mềm: Ở AI Bài 1 mày biết AI đoán từng chữ theo xác suất. Nếu mày viết code yêu cầu AI: 'Trả lời cho tao dưới dạng JSON để tao lưu vào KinetixNotes', nhưng AI lại hứng lên viết thêm câu 'Dạ đây là JSON của bạn: ```json ... ```' ở đầu, thì hàm JSON.parse() trong code của mày sẽ nổ lỗi sập ngay lập tức!",
+      "2. JSON Schema (Khuôn mẫu dữ liệu JSON) là gì?: Là một bản thiết kế quy định cứng: bắt buộc kết quả phải có đúng các trường nào (ví dụ title phải là chữ, points phải là danh sách mảng, category chỉ được chọn 1 trong 4 từ khóa cố định) — cấm tự chế thêm hay bỏ sót!",
+      "3. Cơ chế ép khuôn Structured Outputs (Đầu ra có cấu trúc): Thay vì chỉ 'năn nỉ' AI bằng lời trong prompt, server của Google/OpenAI can thiệp thẳng vào bước chọn xác suất Token (Mảnh chữ) ở AI Bài 1! Ngay tại vị trí bắt buộc phải là dấu mở ngoặc '{' hay dấu nháy kép '\"', hệ thống hạ xác suất của mọi chữ khác xuống 0% — ép AI chỉ được phép bốc đúng ký tự hợp lệ theo khuôn JSON Schema!",
+      "4. Ứng dụng thực tế: Đây chính là lý do lệnh Tool Calling (Gọi công cụ) của AgyX/Pi hay các app xuất dữ liệu tự động chạy ổn định 99.9% mà không bị gãy cú pháp giữa chừng!"
+    ],
+    "quiz": "Nếu không dùng Structured Outputs (ép xác suất từ tầng Token) mà chỉ dặn AI bằng lời: 'Làm ơn chỉ trả về JSON, đừng nói thêm gì nhé', thì tại sao chạy 100 lần vẫn có lúc code bị lỗi khi parse JSON?",
+    "answer": "Vì bản chất AI là đoán chữ theo xác suất — chỉ cần 1 lần nó lỡ đoán thêm chữ 'Dạ vâng' hay bọc dấu ```markdown ở đầu là hàm đọc JSON của code bị gãy ngay.",
+    "createdAt": "2026-11-16T19:22:57.746Z"
   }
 ]
