@@ -462,5 +462,20 @@
     "quiz": "Nếu không dùng Structured Outputs (ép xác suất từ tầng Token) mà chỉ dặn AI bằng lời: 'Làm ơn chỉ trả về JSON, đừng nói thêm gì nhé', thì tại sao chạy 100 lần vẫn có lúc code bị lỗi khi parse JSON?",
     "answer": "Vì bản chất AI là đoán chữ theo xác suất — chỉ cần 1 lần nó lỡ đoán thêm chữ 'Dạ vâng' hay bọc dấu ```markdown ở đầu là hàm đọc JSON của code bị gãy ngay.",
     "createdAt": "2026-11-16T19:22:57.746Z"
+  },
+  {
+    "id": 32,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 14: Rate Limit (Giới hạn gọi API) & Exponential Backoff (Chờ giãn cách)",
+    "summary": "Tại sao bắn 5 con worker cùng lúc dễ bị server chặn bằng mã 429, và cách lập trình cho app tự đợi thông minh thay vì đâm đầu vào tường.",
+    "points": [
+      "1. Rate Limit (Giới hạn tốc độ) là gì?: Server AI của Google hay Anthropic phải phục vụ hàng triệu người nên họ đặt ra hàng rào bảo vệ gọi là Rate Limit. Nó đo bằng 2 chỉ số: RPM (Requests Per Minute — Số lượt gọi tối đa mỗi phút) và TPM (Tokens Per Minute — Số mảnh chữ tối đa mỗi phút).",
+      "2. Lỗi 429 (Too Many Requests — Gọi quá dồn dập): Khi mày thả 5 con worker /swarm bắn request liên tục qua 9Router vượt quá ngưỡng RPM hoặc TPM cho phép, server lập tức đóng cửa trả về mã lỗi HTTP 429.",
+      "3. Sai lầm khi Retry (Thử lại) ngu ngốc: Nếu app thấy lỗi 429 mà lập tức gọi lại liên tiếp 3 lần trong 0.1 giây (không nghỉ), server sẽ tưởng mày đang tấn công spam và khóa tài khoản lâu hơn nữa!",
+      "4. Giải pháp Exponential Backoff (Chờ tăng dần theo cấp số nhân) + Jitter (Độ trễ ngẫu nhiên): Lần 1 lỗi -> đợi 1 giây; lần 2 lỗi -> đợi 2 giây; lần 3 lỗi -> đợi 4 giây, cộng thêm vài mili-giây ngẫu nhiên (Jitter) để 5 con worker không đồng loạt bắn lại đúng cùng một tích-tắc. Nhờ vậy server kịp thở và tỷ lệ thành công tăng vọt!"
+    ],
+    "quiz": "Nếu 5 con worker cùng bị dính lỗi 429 tại đúng một giây, tại sao người ta phải thêm Jitter (chờ thêm một khoảng thời gian ngẫu nhiên nhỏ) thay vì để cả 5 con cùng đợi đúng tròn 2 giây rồi bắn lại cùng lúc?",
+    "answer": "Vì nếu cả 5 con cùng đợi đúng tròn 2.0 giây rồi bắn lại đồng loạt vào cùng một tích-tắc, chúng sẽ lại đâm sầm vào nhau và dính lỗi 429 tiếp! Thêm Jitter giúp rải đều các lượt gọi ra.",
+    "createdAt": "2026-11-16T19:27:45.539Z"
   }
 ]
