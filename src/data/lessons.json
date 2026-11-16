@@ -358,5 +358,19 @@
     "quiz": "Khi lạm phát tăng cao kéo dài, vì sao Ngân hàng Trung ương thường chấp nhận rủi ro kinh tế tăng trưởng chậm lại để tăng lãi suất điều hành?",
     "answer": "Vì tăng lãi suất làm chi phí vay vốn đắt hơn và gửi tiết kiệm hấp dẫn hơn, từ đó giảm tổng cầu chi tiêu quá nóng trong xã hội để hạ nhiệt giá cả và bảo vệ giá trị đồng tiền.",
     "createdAt": "2026-11-16T00:00:00.000Z"
+  },
+  {
+    "id": 25,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 8: Fine-tuning (Tinh chỉnh) & LoRA (Mảnh ghép nhẹ)",
+    "summary": "Cách dạy thêm nghề riêng cho một con AI có sẵn mà không cần sửa toàn bộ não gốc, đủ nhẹ để chạy trên GPU miễn phí.",
+    "points": [
+      "Full Fine-tuning (Tinh chỉnh toàn phần): Mở khóa toàn bộ hàng tỷ Weights (Trọng số) của não AI để học dữ liệu mới — cực nặng, đòi hỏi dàn GPU (Bộ xử lý đồ họa) và hàng trăm GB VRAM (Bộ nhớ card đồ họa).",
+      "LoRA (Low-Rank Adaptation — Thích ứng hạng thấp / Mảnh ghép nhẹ): Giữ nguyên não gốc khóa cứng, chỉ gắn thêm một lớp trọng số phụ siêu nhẹ (1%-2% kích thước gốc) để học nghề mới.",
+      "QLoRA (Quantized LoRA — LoRA nén 4-bit): Nén gọn mô hình gốc để có thể tự tinh chỉnh AI ngay trên 1 GPU T4 miễn phí của Google Colab."
+    ],
+    "quiz": "Nếu muốn tạo 3 phiên bản AI khác nhau từ cùng 1 mô hình gốc Gemma 4 bằng LoRA, bạn có cần lưu 3 bản sao khổng lồ của cả mô hình không?",
+    "answer": "Không — chỉ cần giữ duy nhất 1 bộ não gốc (Weights khóa cứng) cộng thêm 3 mảnh ghép LoRA siêu nhẹ (1%-2% dung lượng) để lắp vào khi cần.",
+    "createdAt": "2026-11-16T17:33:47.538Z"
   }
 ]
