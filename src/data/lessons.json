@@ -432,5 +432,20 @@
     "quiz": "Nếu ở lượt chat thứ 10, mày lỡ sửa lại 1 câu ở System Prompt (phần đầu tiên trên cùng của tờ giấy nháp) thay vì chỉ gõ thêm tin nhắn ở cuối, thì Prompt Caching có còn giữ nguyên được phần đệm của 9 lượt trước không?",
     "answer": "Không! Prompt Caching hoạt động theo kiểu khớp từ đầu trang xuống (Prefix matching) — chỉ cần sửa 1 chữ ở ngay đầu trang là toàn bộ phần đệm phía sau bị vô hiệu hóa, phải tính toán lại từ đầu.",
     "createdAt": "2026-11-16T18:09:29.953Z"
+  },
+  {
+    "id": 30,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 12: Multi-Agent (Đa tác nhân) & Orchestration (Điều phối /swarm)",
+    "summary": "Tại sao bắt 1 con AI làm tất cả từ đầu tới cuối lại dễ bị 'ngáo' khi dự án to lên, và bí quyết chia việc cho nhiều Subagent (Tác nhân con) không bị ghi đè code của nhau.",
+    "points": [
+      "1. Căn bệnh Context Pollution (Ô nhiễm giấy nháp): Nếu chỉ dùng 1 con AI duy nhất vừa đọc 20 file code, vừa sửa backend Rust, vừa sửa giao diện Compose, lại vừa đọc log CI dài 500 dòng — tờ giấy nháp Context Window (Cửa sổ ngữ cảnh) sẽ ngập trong đống rác lẫn lộn. Khi giấy nháp quá bẩn, bộ lọc Attention (Cơ chế chú ý) bị nhiễu, dẫn tới AI sửa chỗ này lại quên chỗ kia!",
+      "2. Giải pháp Multi-Agent (Đa tác nhân — Chia để trị): Thay vì 1 con ôm hết, hệ thống tách ra 1 con Orchestrator (Nhạc trưởng / Người điều phối, dùng model Thinking thông minh) đứng chỉ huy, và đẻ ra nhiều Subagent / Worker (Tác nhân con, chạy model nhanh như Hydrogen). Mỗi Worker được phát một tờ giấy nháp TRẮNG TINH chỉ chứa đúng phần việc của nó → đầu óc sạch sẽ, làm nhanh và chuẩn hơn hẳn!",
+      "3. Hai cái bẫy chết người của /swarm (mày đã gặp ở AgyX-V2): Thứ nhất là Race Condition / Write Conflict (Xung đột ghi file) — 2 con Worker cùng sửa chung 1 file sẽ ghi đè code của nhau hoặc làm gãy dấu ngoặc. Thứ hai là thiếu Gatekeeper (Người gác cổng) — không có bước chạy compile/unit test cuối cùng trước khi git push.",
+      "4. Công thức vàng cho /swarm: Khóa chặt phạm vi file (Strict File Ownership — mỗi Worker chỉ được chạm đúng file thuộc tầng của mình), và bắt buộc bước cuối cùng phải chạy kiểm tra biên dịch/test pass 100% mới cho đẩy lên GitHub!"
+    ],
+    "quiz": "Trong một hệ thống /swarm gồm 1 Orchestrator (Nhạc trưởng) và 3 Worker (Thợ con), tại sao mỗi Worker lại cần có một tờ giấy nháp Context Window riêng biệt thay vì dùng chung một tờ giấy nháp khổng lồ?",
+    "answer": "Để tránh Context Pollution (Ô nhiễm ngữ cảnh): mỗi Worker chỉ cần đọc đúng file và nhiệm vụ của mình trên tờ giấy sạch, giúp Attention tập trung tối đa và tiết kiệm cực nhiều Token!",
+    "createdAt": "2026-11-16T18:13:52.912Z"
   }
 ]
