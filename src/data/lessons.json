@@ -417,5 +417,20 @@
     "quiz": "Khi mày gửi một tấm ảnh vào cho AI, thực chất bức ảnh đó có được lưu nguyên dạng hình vẽ vào trong đầu AI không, hay phải qua bước gì để hòa chung vào tờ giấy nháp với chữ viết?",
     "answer": "Không lưu dạng hình vẽ — Vision Encoder sẽ cắt ảnh thành nhiều ô vuông (Patch) rồi biến mỗi ô thành dãy số tọa độ có cùng định dạng với Token chữ viết để xếp chung lên tờ giấy nháp Context Window.",
     "createdAt": "2026-11-16T18:04:34.685Z"
+  },
+  {
+    "id": 29,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 11: System Prompt (Lệnh nền) & Prompt Caching (Lưu đệm giấy nháp)",
+    "summary": "Cách các hệ thống AI gắn 'luật chơi' vào đầu tờ giấy nháp và mẹo lưu đệm phần chữ cũ để tiết kiệm tới 50%-90% chi phí Token.",
+    "points": [
+      "1. System Prompt (Lệnh nền hệ thống) là gì?: Trước khi câu 'hi' của mày được đặt lên tờ giấy nháp Context Window (Cửa sổ ngữ cảnh), app chat luôn lén dán sẵn một đoạn hướng dẫn dài ở trên cùng — ví dụ: 'Mày là trợ lý lập trình AgyX, hãy nói chuyện kiểu mày-tao, luôn kiểm tra lỗi...' Đoạn đó gọi là System Prompt (Lệnh nền). Dù mày chưa nói gì, AI đã đọc sẵn luật chơi này rồi!",
+      "2. Nỗi đau tốn Token khi dùng Agent: Khi chạy Pi hay AgyX, phần đầu tờ giấy nháp (gồm System Prompt + danh sách Tools + nội dung các file code đã đọc) có thể dài tới 30.000 Token. Ở AI Bài 2 mày biết cứ mỗi lượt hỏi mới, app lại gửi toàn bộ đống đó lên lại từ đầu!",
+      "3. Phép màu Prompt Caching (Lưu đệm đầu giấy nháp): Thay vì bắt GPU (Bộ xử lý đồ họa) tính toán lại từ đầu 30.000 Token giống hệt nhau ở lượt trước, server của Google/Anthropic sẽ 'chụp ảnh lưu tạm' kết quả tính toán của phần đầu tờ giấy nháp (gọi là Cache — Bộ nhớ đệm) trong vài phút. Sang lượt sau, chỉ cần phần đầu giữ nguyên không đổi một dấu phẩy nào (Cache Hit — Trúng đệm), AI chỉ cần tính tiếp đúng vài chữ mày mới gõ thêm ở cuối → nhanh hơn gấp nhiều lần và rẻ hơn tới 50%–90%!",
+      "4. Liên hệ thẳng tới Strict Lock trên 9Router: Tại sao trên 9Router hôm qua mày thấy chế độ Strict Lock (Khóa cứng 1 session vào 1 model)? Vì nếu lượt 1 mày gửi qua Claude, lượt 2 tự nhiên đổi sang Gemini thì bộ nhớ đệm Cache ở bên Claude coi như vứt đi, phải tính lại từ con số 0!"
+    ],
+    "quiz": "Nếu ở lượt chat thứ 10, mày lỡ sửa lại 1 câu ở System Prompt (phần đầu tiên trên cùng của tờ giấy nháp) thay vì chỉ gõ thêm tin nhắn ở cuối, thì Prompt Caching có còn giữ nguyên được phần đệm của 9 lượt trước không?",
+    "answer": "Không! Prompt Caching hoạt động theo kiểu khớp từ đầu trang xuống (Prefix matching) — chỉ cần sửa 1 chữ ở ngay đầu trang là toàn bộ phần đệm phía sau bị vô hiệu hóa, phải tính toán lại từ đầu.",
+    "createdAt": "2026-11-16T18:09:29.953Z"
   }
 ]
