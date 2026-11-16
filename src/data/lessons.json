@@ -387,5 +387,20 @@
     "quiz": "Giả sử mày muốn tạo 3 phiên bản AI khác nhau từ cùng 1 mô hình gốc Gemma 4 (1 bản sửa lỗi Kotlin/Rust, 1 bản soi web, 1 bản tóm tắt sách Tâm lý). Nếu dùng LoRA, mày cần lưu 3 bản sao khổng lồ của cả mô hình hay chỉ cần giữ 1 não gốc + 3 cái gì?",
     "answer": "Chỉ cần giữ duy nhất 1 bộ não gốc (Weights khóa cứng) và 3 mảnh ghép LoRA siêu nhẹ (mỗi mảnh chỉ 1%–2% dung lượng). Cần dùng nghề nào thì lắp đúng mảnh ghép của nghề đó vào trong tích tắc — cực kỳ tiết kiệm ổ cứng và VRAM!",
     "createdAt": "2026-11-16T17:49:39.811Z"
+  },
+  {
+    "id": 27,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 9: Quantization (Lượng tử hóa / Nén mô hình) & Local LLM (Chạy AI ngay trên điện thoại)",
+    "summary": "Làm sao nhét một bộ não AI nặng hàng chục GB vào vừa bộ nhớ RAM của chiếc điện thoại Android để chạy hoàn toàn offline.",
+    "points": [
+      "1. Vấn đề: Ở các bài trước mày biết bộ não AI gồm hàng tỷ con số Weights (Trọng số). Bình thường mỗi con số đó được lưu cực kỳ chi tiết ở dạng số thập phân 16-bit (gọi là FP16 — Floating Point 16-bit, ví dụ 0.84729104). Với một mô hình 7 tỷ tham số (7B), chỉ riêng tiền chứa đống số chi tiết đó đã ngốn khoảng 14 GB RAM (Bộ nhớ tạm) — điện thoại 8GB hay 12GB RAM bật lên là sập nguồn ngay!",
+      "2. Phép màu Quantization (Lượng tử hóa — Làm tròn & nén số): Thay vì lưu con số dài ngoằng 0.84729104 tốn chỗ, người ta làm tròn nó xuống thành số nguyên đơn giản chỉ tốn 4-bit (gọi là INT4 — Integer 4-bit, chỉ còn vài mức giá trị như -8 đến +7). Đổi lại, dung lượng mô hình giảm tới 4 lần (từ 14 GB tụt xuống chỉ còn khoảng 3.5–4 GB!), đủ lọt thỏm vào RAM của điện thoại!",
+      "3. Làm tròn vậy AI có bị ngáo đi không?: Câu trả lời là CÓ giảm thông minh đi một chút xíu (nhưng chỉ khoảng 1%–3% với các thuật toán nén hiện đại như GGUF — định dạng file chạy AI offline phổ biến nhất). Đổi lại, tốc độ nhả chữ nhanh hơn hẳn vì CPU/GPU đọc số ngắn nhẹ hơn rất nhiều.",
+      "4. Local LLM (Mô hình Ngôn ngữ Lớn chạy cục bộ) trên Android: Nhờ Quantization (Nén 4-bit) kết hợp với các dòng model nhỏ như Gemma 4 E2B/E4B hay Qwen nhỏ, điện thoại Android có thể chạy AI qua NPU (Neural Processing Unit — Bộ xử lý AI riêng trên chip Snapdragon) ngay cả khi tắt WiFi/4G — miễn phí 0đ token và không sợ lộ dữ liệu!"
+    ],
+    "quiz": "Một mô hình AI 8 tỷ tham số ở chuẩn 16-bit (FP16) nặng khoảng 16 GB RAM. Nếu nén bằng Quantization xuống 4-bit (INT4), dung lượng RAM cần để chứa nó giảm xuống còn khoảng bao nhiêu GB — và tại sao điều này giúp điện thoại chạy AI offline được?",
+    "answer": "Giảm xuống còn khoảng 4 GB RAM (nhẹ hơn 4 lần, vì 16-bit giảm xuống 4-bit). Nhờ vậy nó lọt vừa vào bộ nhớ RAM 8GB–12GB của điện thoại mà không bị OOM (Tràn bộ nhớ) kill mất!",
+    "createdAt": "2026-11-16T17:53:41.036Z"
   }
 ]
