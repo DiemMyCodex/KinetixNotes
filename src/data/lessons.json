@@ -372,5 +372,20 @@
     "quiz": "Nếu muốn tạo 3 phiên bản AI khác nhau từ cùng 1 mô hình gốc Gemma 4 bằng LoRA, bạn có cần lưu 3 bản sao khổng lồ của cả mô hình không?",
     "answer": "Không — chỉ cần giữ duy nhất 1 bộ não gốc (Weights khóa cứng) cộng thêm 3 mảnh ghép LoRA siêu nhẹ (1%-2% dung lượng) để lắp vào khi cần.",
     "createdAt": "2026-11-16T17:33:47.538Z"
+  },
+  {
+    "id": 26,
+    "category": "Trí tuệ AI",
+    "title": "AI Bài 8 (Bản Đầy Đủ): Fine-tuning (Tinh chỉnh) & LoRA (Mảnh ghép nhẹ)",
+    "summary": "Làm sao để dạy thêm một nghề riêng cho con AI có sẵn mà không cần siêu máy tính — kỹ thuật giúp mày tự train model ngay trên GPU T4 miễn phí của Google Colab.",
+    "points": [
+      "1. Bài toán đặt ra: Như mày đã biết ở AI Bài 3, bộ não Weights (Trọng số — kinh nghiệm đã học) của AI bị khóa cứng sau khi Training (Huấn luyện). Vậy nếu mày tải một con AI mã nguồn mở (như Gemma 4) về và muốn biến nó thành chuyên gia viết code cho AgyX-V2 mà không phải lần nào cũng dán prompt dài ngoằng lên tờ giấy nháp Context Window (Cửa sổ ngữ cảnh), mày phải dùng kỹ thuật Fine-tuning (Tinh chỉnh).",
+      "2. Tại sao Full Fine-tuning (Tinh chỉnh toàn phần) lại cực nặng?: Cách truyền thống này mở khóa toàn bộ hàng tỷ con số Weights (Trọng số) trong não AI ra để sửa lại theo dữ liệu mới của mày. Để chứa và tính toán nổi chừng đó con số cùng lúc, mày cần cả dàn GPU (Graphics Processing Unit — Bộ xử lý đồ họa) đắt tiền với hàng trăm GB VRAM (Video RAM — Bộ nhớ tạm của card đồ họa). Máy cá nhân hay Google Colab miễn phí chịu chết!",
+      "3. Phép màu LoRA (Low-Rank Adaptation — Thích ứng hạng thấp / Mảnh ghép nhẹ): Thay vì đập đi xây lại cả tòa nhà 100 tầng (bộ não gốc), người ta giữ nguyên khóa chặt mô hình gốc không đụng tới, rồi chỉ kẹp thêm một chiếc 'ba lô nhỏ' bên cạnh — gọi là Adapter (Mảnh ghép phụ, chỉ nặng bằng 1%–2% mô hình gốc). Khi học nghề mới, máy tính chỉ cập nhật con số trong chiếc ba lô nhỏ xíu đó!",
+      "4. QLoRA (Quantized LoRA — LoRA nén 4-bit): Kết hợp nén nhẹ bộ não gốc xuống dạng 4-bit nữa, giúp mày chỉ cần 1 con GPU T4 miễn phí trên Google Colab là tự dạy nghề riêng cho AI ngon ơ (đúng ví dụ dùng google-colab-cli hôm qua!)."
+    ],
+    "quiz": "Giả sử mày muốn tạo 3 phiên bản AI khác nhau từ cùng 1 mô hình gốc Gemma 4 (1 bản sửa lỗi Kotlin/Rust, 1 bản soi web, 1 bản tóm tắt sách Tâm lý). Nếu dùng LoRA, mày cần lưu 3 bản sao khổng lồ của cả mô hình hay chỉ cần giữ 1 não gốc + 3 cái gì?",
+    "answer": "Chỉ cần giữ duy nhất 1 bộ não gốc (Weights khóa cứng) và 3 mảnh ghép LoRA siêu nhẹ (mỗi mảnh chỉ 1%–2% dung lượng). Cần dùng nghề nào thì lắp đúng mảnh ghép của nghề đó vào trong tích tắc — cực kỳ tiết kiệm ổ cứng và VRAM!",
+    "createdAt": "2026-11-16T17:49:39.811Z"
   }
 ]
