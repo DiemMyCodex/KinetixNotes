@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "category": "Máy tính",
+    "title": "CPU, RAM và Chu kỳ Tìm nạp - Giải mã - Thực thi",
+    "summary": "Hiểu cách bộ xử lý trung tâm và bộ nhớ truy cập ngẫu nhiên phối hợp để biến từng dòng mã lệnh thành hành động thực tế trên màn hình.",
+    "points": [
+      "CPU (Central Processing Unit — Bộ xử lý trung tâm) là bộ não tính toán của máy tính, hoạt động theo vòng lặp bất tận gọi là Fetch-Decode-Execute (Tìm nạp - Giải mã - Thực thi).",
+      "RAM (Random Access Memory — Bộ nhớ truy cập ngẫu nhiên) là bàn làm việc tạm thời tốc độ cao, lưu dữ liệu và chương trình đang chạy; dữ liệu trong RAM sẽ mất khi tắt nguồn.",
+      "Cache (Bộ nhớ đệm L1, L2, L3) nằm ngay trên chip CPU, nhỏ hơn RAM nhiều lần nhưng nhanh hơn gấp hàng chục lần, giúp giảm thời gian CPU phải chờ lấy dữ liệu.",
+      "Clock Speed (Xung nhịp, đo bằng GHz — Gigahertz, tỷ chu kỳ mỗi giây) cho biết nhịp độ xử lý cơ bản, nhưng kiến trúc nhân và bộ nhớ đệm mới quyết định hiệu năng thực tế."
+    ],
+    "quiz": "Tại sao nâng cấp dung lượng RAM giúp máy tính mở nhiều ứng dụng mượt hơn, dù RAM không trực tiếp tính toán như CPU?",
+    "answer": "Vì RAM đóng vai trò là bàn làm việc chứa dữ liệu của các ứng dụng đang mở. Khi RAM đầy, hệ điều hành phải đẩy bớt dữ liệu sang ổ cứng (Swap/Pagefile) vốn chậm hơn RAM hàng chục đến hàng trăm lần, gây giật lag.",
+    "createdAt": "2026-11-01T08:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "category": "Máy tính",
+    "title": "Hệ điều hành: Tiến trình, Luồng và Bộ lập lịch",
+    "summary": "Cách hệ điều hành tạo ra ảo giác đa nhiệm mượt mà khi hàng trăm tác vụ cùng chia sẻ một số lượng nhân xử lý hữu hạn.",
+    "points": [
+      "OS (Operating System — Hệ điều hành) là lớp phần mềm quản lý phần cứng, cấp phát tài nguyên và đóng vai trò trọng tài giữa các ứng dụng.",
+      "Process (Tiến trình) là một chương trình đang chạy với không gian bộ nhớ cô lập riêng, giúp một ứng dụng bị lỗi không làm sập toàn bộ hệ thống.",
+      "Thread (Luồng) là đơn vị thực thi nhỏ nhất nằm bên trong tiến trình; các luồng dùng chung bộ nhớ của tiến trình đó để xử lý song song nhiều việc cùng lúc.",
+      "Context Switching (Chuyển ngữ cảnh) là thao tác bộ lập lịch (Scheduler) tạm dừng luồng này để nhường CPU cho luồng khác chỉ trong vài phần nghìn giây."
+    ],
+    "quiz": "Sự khác biệt cốt lõi về bộ nhớ giữa hai Process (Tiến trình) và hai Thread (Luồng) trong cùng một chương trình là gì?",
+    "answer": "Hai Process có vùng nhớ tách biệt hoàn toàn và khó chia sẻ trực tiếp với nhau, còn hai Thread trong cùng một Process dùng chung vùng nhớ đó nên trao đổi dữ liệu nhanh hơn nhưng dễ phát sinh xung đột nếu không đồng bộ cẩn thận.",
+    "createdAt": "2026-11-02T08:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "category": "Máy tính",
+    "title": "Hệ thống mạng: DNS, TCP/IP và Giao thức HTTP",
+    "summary": "Hành trình của một gói tin từ lúc bạn gõ địa chỉ trang web cho đến khi nội dung hoàn chỉnh hiện lên trình duyệt.",
+    "points": [
+      "IP (Internet Protocol — Giao thức Internet) gán cho mỗi thiết bị một địa chỉ số duy nhất để định tuyến gói tin đi đúng đích trên mạng toàn cầu.",
+      "DNS (Domain Name System — Hệ thống tên miền) giống như danh bạ điện thoại, dịch tên miền dễ nhớ cho con người sang địa chỉ IP dạng số cho máy tính.",
+      "TCP (Transmission Control Protocol — Giao thức điều khiển truyền vận) đảm bảo dữ liệu đến nơi đầy đủ và đúng thứ tự thông qua bắt tay ba bước (Three-way Handshake).",
+      "HTTP/HTTPS (Hypertext Transfer Protocol Secure — Giao thức truyền tải siêu văn bản bảo mật) quy định cách trình duyệt và máy chủ hỏi-đáp, với lớp mã hóa TLS (Transport Layer Security — Bảo mật tầng truyền tải) bảo vệ dữ liệu trên đường truyền."
+    ],
+    "quiz": "Điều gì xảy ra nếu máy chủ DNS bị gián đoạn ngay cả khi đường truyền cáp quang và máy chủ web đích vẫn hoạt động bình thường?",
+    "answer": "Trình duyệt sẽ không thể dịch tên miền (ví dụ example.com) sang địa chỉ IP tương ứng nên báo lỗi không tìm thấy trang, dù bạn vẫn có thể truy cập nếu nhập trực tiếp địa chỉ IP.",
+    "createdAt": "2026-11-03T08:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "category": "Máy tính",
+    "title": "Cơ sở dữ liệu Quan hệ, Chỉ mục và Giao dịch ACID",
+    "summary": "Nguyên tắc giữ cho dữ liệu vừa tìm kiếm siêu nhanh trong hàng triệu bản ghi, vừa an toàn tuyệt đối khi có sự cố.",
+    "points": [
+      "RDBMS (Relational Database Management System — Hệ quản trị cơ sở dữ liệu quan hệ) tổ chức dữ liệu thành các bảng có hàng và cột liên kết chặt chẽ qua khóa chính và khóa ngoại.",
+      "Index (Chỉ mục, thường dùng cấu trúc B-Tree — Cây cân bằng) đóng vai trò như mục lục sách, giúp tìm kiếm bản ghi mà không cần quét tuần tự toàn bộ bảng.",
+      "ACID là viết tắt của 4 tính chất bảo đảm an toàn giao dịch: Atomicity (Tính nguyên tử — xong hết hoặc hủy hết), Consistency (Tính nhất quán), Isolation (Tính cô lập), Durability (Tính bền vững).",
+      "SQL (Structured Query Language — Ngôn ngữ truy vấn có cấu trúc) là ngôn ngữ tiêu chuẩn để đọc, lọc, cập nhật và tổng hợp dữ liệu."
+    ],
+    "quiz": "Vì sao không nên tạo Index (Chỉ mục) cho mọi cột trong một bảng cơ sở dữ liệu?",
+    "answer": "Vì mỗi Index tốn thêm dung lượng lưu trữ và làm chậm các thao tác ghi (INSERT, UPDATE, DELETE) do cơ sở dữ liệu phải cập nhật lại toàn bộ cây chỉ mục tương ứng mỗi khi dữ liệu thay đổi.",
+    "createdAt": "2026-11-04T08:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "category": "Máy tính",
+    "title": "Độ phức tạp Thuật toán: Ký hiệu Big-O và Đánh đổi",
+    "summary": "Cách đo lường khả năng mở rộng của thuật toán khi dữ liệu tăng từ vài trăm lên hàng chục triệu phần tử.",
+    "points": [
+      "Big-O Notation (Ký hiệu chữ O lớn) mô tả tốc độ tăng trưởng của thời gian chạy hoặc bộ nhớ khi kích thước đầu vào n tiến tới rất lớn.",
+      "O(1) (Thời gian hằng số) nghĩa là thao tác mất thời gian như nhau bất kể dữ liệu lớn đến đâu, ví dụ tra cứu phần tử theo chỉ số mảng hoặc bảng băm (Hash Table).",
+      "O(log n) (Thời gian logarit) xuất hiện ở thuật toán tìm kiếm nhị phân (Binary Search), cắt đôi phạm vi tìm kiếm sau mỗi bước nên cực kỳ nhanh với dữ liệu đã sắp xếp.",
+      "O(n²) (Thời gian bình phương) thường xảy ra với hai vòng lặp lồng nhau; chạy ổn với 100 phần tử nhưng sẽ chậm nghiêm trọng khi dữ liệu lên tới 100.000 phần tử."
+    ],
+    "quiz": "Một mảng đã sắp xếp có 1 triệu phần tử; tìm kiếm nhị phân O(log n) cần tối đa khoảng bao nhiêu phép so sánh?",
+    "answer": "Chỉ khoảng 20 phép so sánh (vì 2^20 xấp xỉ 1.048.576), so với trung bình 500.000 phép so sánh nếu duyệt tuần tự O(n).",
+    "createdAt": "2026-11-05T08:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "category": "Máy tính",
+    "title": "Bộ nhớ đệm, CDN và Kiến trúc Web Tốc độ cao",
+    "summary": "Nghệ thuật giảm độ trễ bằng cách đưa dữ liệu đến gần người dùng nhất và tránh tính toán lặp lại những thứ không đổi.",
+    "points": [
+      "Cache (Bộ nhớ đệm ứng dụng, như Redis) lưu kết quả tính toán tốn kém trong RAM của máy chủ để các lượt truy cập sau trả về tức thì.",
+      "CDN (Content Delivery Network — Mạng phân phối nội dung) đặt bản sao tệp tĩnh như ảnh, phông chữ, mã giao diện tại các máy chủ biên (Edge Server) gần vị trí địa lý của người dùng.",
+      "TTL (Time To Live — Thời gian sống) quy định khoảng thời gian một bản lưu tạm còn hợp lệ trước khi hệ thống tự động làm mới từ nguồn gốc.",
+      "Cache Invalidation (Làm mới/Vô hiệu hóa bộ nhớ đệm) là bài toán xóa đúng dữ liệu cũ ngay khi thông tin gốc thay đổi để tránh hiển thị sai lệch."
+    ],
+    "quiz": "Lợi ích lớn nhất của việc phục vụ file tĩnh qua CDN (Mạng phân phối nội dung) so với một máy chủ gốc duy nhất là gì?",
+    "answer": "Giảm độ trễ vật lý (Latency) vì dữ liệu đi quãng đường ngắn hơn đến người dùng, đồng thời giảm tải băng thông và CPU cho máy chủ gốc.",
+    "createdAt": "2026-11-06T08:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "category": "Máy tính",
+    "title": "Mã hóa Đối xứng, Bất đối xứng và Hàm băm Bảo mật",
+    "summary": "Ba viên gạch nền tảng bảo vệ mật khẩu, tin nhắn riêng tư và chữ ký số trên không gian mạng.",
+    "points": [
+      "Symmetric Encryption (Mã hóa đối xứng, ví dụ AES — Advanced Encryption Standard) dùng chung một khóa bí mật để khóa và mở, tốc độ cực nhanh cho lượng dữ liệu lớn.",
+      "Asymmetric Encryption (Mã hóa bất đối xứng, như RSA hoặc ECC) dùng một cặp khóa liên kết: Public Key (Khóa công khai) để mọi người mã hóa gửi tới và Private Key (Khóa bí mật) chỉ chủ nhân giữ để giải mã.",
+      "Cryptographic Hash (Hàm băm mật mã, như SHA-256) biến dữ liệu bất kỳ thành chuỗi ký tự cố định một chiều, không thể dịch ngược về dữ liệu gốc.",
+      "Salt (Muối mật mã) là chuỗi ngẫu nhiên trộn vào mật khẩu trước khi băm, giúp hai người đặt mật khẩu giống nhau vẫn có mã băm hoàn toàn khác nhau."
+    ],
+    "quiz": "Tại sao hệ thống hiện đại lưu bản băm (Hash) của mật khẩu kèm Salt thay vì mã hóa hai chiều mật khẩu đó?",
+    "answer": "Vì mã hóa hai chiều vẫn có thể bị giải mã nếu kẻ tấn công lấy được khóa bí mật. Hàm băm một chiều kết hợp Salt khiến ngay cả quản trị viên hay hacker đánh cắp cơ sở dữ liệu cũng không biết được mật khẩu gốc.",
+    "createdAt": "2026-11-07T08:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "category": "Trí tuệ AI",
+    "title": "Học máy (Machine Learning) và Ba mô hình Học cốt lõi",
+    "summary": "Phân biệt cách máy tính rút ra quy luật từ dữ liệu có nhãn, dữ liệu thô và thử-sai qua phần thưởng.",
+    "points": [
+      "ML (Machine Learning — Học máy) cho phép phần mềm tự rút ra mẫu quy luật từ dữ liệu lịch sử thay vì lập trình từng câu lệnh điều kiện cứng nhắc.",
+      "Supervised Learning (Học có giám sát) huấn luyện mô hình trên cặp dữ liệu đầu vào và đáp án đúng (Label), phù hợp cho dự đoán giá nhà hay phân loại thư rác.",
+      "Unsupervised Learning (Học không giám sát) tự tìm cấu trúc ẩn trong dữ liệu chưa gắn nhãn, thường dùng để phân nhóm khách hàng hoặc phát hiện bất thường.",
+      "RL (Reinforcement Learning — Học tăng cường) để tác tử (Agent) tự thử nghiệm hành động trong môi trường và tối ưu chiến lược dựa trên điểm thưởng hoặc phạt."
+    ],
+    "quiz": "Khi bạn muốn hệ thống tự chia 100.000 người đọc thành các nhóm sở thích tương đồng mà chưa có danh sách nhóm mẫu từ trước, nên dùng phương pháp nào?",
+    "answer": "Dùng Unsupervised Learning (Học không giám sát), cụ thể là các thuật toán phân cụm (Clustering) để tự khám phá nhóm tương đồng từ hành vi đọc.",
+    "createdAt": "2026-11-08T08:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "category": "Trí tuệ AI",
+    "title": "Mạng Nơ-ron Nhân tạo và Thuật toán Lan truyền ngược",
+    "summary": "Cách hàng triệu phép nhân ma trận đơn giản xếp chồng lên nhau để học được khả năng nhận diện hình ảnh và ngôn ngữ.",
+    "points": [
+      "Neural Network (Mạng nơ-ron nhân tạo) gồm các nút tính toán xếp thành Input Layer (Tầng đầu vào), Hidden Layers (Các tầng ẩn) và Output Layer (Tầng đầu ra).",
+      "Weights & Biases (Trọng số và Độ lệch) là các tham số số học quyết định mức độ ảnh hưởng của mỗi tín hiệu đầu vào lên kết quả.",
+      "Activation Function (Hàm kích hoạt phi tuyến, ví dụ ReLU) giúp mạng học được những đường cong và mối quan hệ phức tạp thay vì chỉ phép cộng tuyến tính.",
+      "Backpropagation (Lan truyền ngược) kết hợp Gradient Descent (Hạ dốc độ dốc) đo sai số ở đầu ra rồi điều chỉnh ngược từng trọng số để lần đoán sau chính xác hơn."
+    ],
+    "quiz": "Nếu loại bỏ toàn bộ Activation Function (Hàm kích hoạt phi tuyến) khỏi một mạng nơ-ron nhiều tầng, chuyện gì sẽ xảy ra?",
+    "answer": "Cả mạng nơ-ron sâu hàng chục tầng sẽ suy biến thành một hàm tuyến tính đơn giản tương đương chỉ một tầng duy nhất, mất khả năng học các quy luật phức tạp.",
+    "createdAt": "2026-11-09T08:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "category": "Trí tuệ AI",
+    "title": "Kiến trúc Transformer và Cơ chế Tự chú ý (Self-Attention)",
+    "summary": "Bước ngoặt kiến trúc giúp mô hình ngôn ngữ đọc toàn bộ câu cùng lúc và hiểu ngữ cảnh sâu sắc của từng từ.",
+    "points": [
+      "Transformer là kiến trúc mạng nơ-ron ra đời năm 2017, thay thế xử lý tuần tự chậm chạp bằng khả năng tính toán song song trên GPU (Graphics Processing Unit — Bộ xử lý đồ họa).",
+      "Self-Attention (Cơ chế tự chú ý) cho phép mỗi từ trong câu trực tiếp cân nhắc mức độ liên quan của mình với mọi từ khác trong cùng đoạn văn.",
+      "Bộ ba Q-K-V (Query — Truy vấn, Key — Khóa, Value — Giá trị) là phép biến đổi toán học giúp tính điểm chú ý giữa các từ để tổng hợp ngữ nghĩa theo ngữ cảnh.",
+      "Positional Encoding (Mã hóa vị trí) bổ sung thông tin thứ tự từ vào vector để mô hình phân biệt được 'chó đuổi mèo' khác với 'mèo đuổi chó'."
+    ],
+    "quiz": "Self-Attention giải quyết hạn chế lớn nhất nào của các mô hình xử lý chuỗi thế hệ cũ như RNN (Mạng nơ-ron hồi quy)?",
+    "answer": "RNN phải đọc từng từ tuần tự từ trái sang phải nên chậm và hay quên ngữ cảnh ở đầu câu dài; Self-Attention xử lý song song toàn bộ câu và kết nối trực tiếp mọi vị trí bất kể khoảng cách.",
+    "createdAt": "2026-11-10T08:00:00.000Z"
+  },
+  {
+    "id": 11,
+    "category": "Trí tuệ AI",
+    "title": "Token, Embeddings và Cửa sổ Ngữ cảnh của LLM",
+    "summary": "Mô hình ngôn ngữ lớn không đọc chữ cái như con người — chúng biến mảnh từ ngữ thành tọa độ hình học đa chiều.",
+    "points": [
+      "LLM (Large Language Model — Mô hình ngôn ngữ lớn) dự đoán Token (Đơn vị mã hóa từ/mảnh từ) tiếp theo có xác suất hợp lý nhất dựa trên toàn bộ văn bản phía trước.",
+      "Tokenizer (Bộ tách token) cắt từ dài hoặc tiếng Việt thành các mảnh nhỏ hơn; từ hiếm tốn nhiều token hơn từ phổ biến.",
+      "Embeddings (Vector nhúng ngữ nghĩa) ánh xạ mỗi token thành một dãy hàng nghìn con số trong không gian đa chiều, nơi các khái niệm gần nghĩa nằm sát nhau.",
+      "Context Window (Cửa sổ ngữ cảnh) là giới hạn tối đa tổng số token đầu vào và đầu ra mà mô hình có thể 'nhớ' cùng lúc trong một phiên suy luận."
+    ],
+    "quiz": "Vì sao câu hỏi có cùng độ dài bằng tiếng Việt đôi khi tốn nhiều Token hơn câu tương đương bằng tiếng Anh?",
+    "answer": "Vì nhiều Tokenizer được huấn luyện chủ yếu trên dữ liệu tiếng Anh nên từ tiếng Anh thường khớp trọn vẹn thành 1 token, còn từ tiếng Việt có dấu có thể bị tách thành nhiều mảnh token nhỏ hơn.",
+    "createdAt": "2026-11-11T08:00:00.000Z"
+  },
+  {
+    "id": 12,
+    "category": "Trí tuệ AI",
+    "title": "RAG (Tạo sinh Tăng cường Truy xuất) và Vector Database",
+    "summary": "Cách nối mô hình AI với kho tài liệu riêng tư theo thời gian thực để giảm bịa đặt thông tin.",
+    "points": [
+      "RAG (Retrieval-Augmented Generation — Tạo sinh tăng cường truy xuất) tìm các đoạn tài liệu liên quan nhất trước rồi đính kèm vào câu lệnh gửi cho LLM trả lời.",
+      "Vector Database (Cơ sở dữ liệu vector) lưu trữ các đoạn văn bản đã chuyển thành vector Embeddings để tìm kiếm theo ý nghĩa chứ không chỉ khớp từng từ khóa chính xác.",
+      "Chunking (Chia nhỏ tài liệu) cắt văn bản dài thành các đoạn vừa phải có phần gối đầu (Overlap) để không làm đứt gãy ý nghĩa khi truy xuất.",
+      "Grounding (Neo dữ liệu thực tế) giúp câu trả lời trích dẫn đúng nguồn tài liệu nội bộ và giảm đáng kể hiện tượng Hallucination (Ảo giác — AI tự suy diễn sai sự thật)."
+    ],
+    "quiz": "Khi doanh nghiệp có quy trình nội bộ thay đổi hàng ngày, vì sao RAG thường hiệu quả hơn việc Fine-tuning (Tinh chỉnh lại trọng số mô hình)?",
+    "answer": "Vì RAG chỉ cần cập nhật tài liệu mới vào cơ sở dữ liệu vector là AI đọc được ngay lập tức, trong khi Fine-tuning tốn thời gian huấn luyện lại, chi phí cao và khó xóa thông tin cũ.",
+    "createdAt": "2026-11-12T08:00:00.000Z"
+  },
+  {
+    "id": 13,
+    "category": "Trí tuệ AI",
+    "title": "Kỹ thuật Prompting, Nhiệt độ (Temperature) và Suy luận Chuỗi",
+    "summary": "Điều khiển tính sáng tạo, độ ổn định và khả năng giải bài toán nhiều bước của mô hình ngôn ngữ.",
+    "points": [
+      "Temperature (Tham số nhiệt độ) kiểm soát độ ngẫu nhiên khi chọn token kế tiếp: giá trị thấp (0.0–0.2) cho kết quả chính xác, nhất quán; giá trị cao (0.7–1.0) tăng tính đa dạng, sáng tạo.",
+      "Few-shot Prompting (Đưa vài ví dụ mẫu trong câu lệnh) giúp mô hình nắm chính xác định dạng và giọng văn mong muốn mà không cần huấn luyện lại.",
+      "CoT (Chain-of-Thought — Suy luận theo chuỗi từng bước) yêu cầu mô hình viết ra quá trình lập luận trung gian trước khi chốt đáp án cuối, cải thiện mạnh độ đúng ở bài toán logic.",
+      "Structured Outputs (Đầu ra có cấu trúc như JSON Schema) ép mô hình trả về dữ liệu đúng khuôn mẫu để phần mềm đọc và xử lý tự động không bị lỗi."
+    ],
+    "quiz": "Nếu bạn đang xây dựng tính năng trích xuất số hóa đơn và ngày tháng từ văn bản sang JSON, nên đặt Temperature ở mức nào?",
+    "answer": "Nên đặt Temperature rất thấp (0 hoặc 0.1) để mô hình chọn kết quả xác suất cao nhất, ổn định và hạn chế tối đa việc tự sáng tạo sai con số.",
+    "createdAt": "2026-11-13T08:00:00.000Z"
+  },
+  {
+    "id": 14,
+    "category": "Trí tuệ AI",
+    "title": "AI Agents, Gọi Công cụ (Tool Calling) và Vòng lặp Tự chủ",
+    "summary": "Bước chuyển từ mô hình chỉ biết trả lời văn bản sang hệ thống biết lập kế hoạch, dùng công cụ và tự kiểm chứng kết quả.",
+    "points": [
+      "AI Agent (Tác tử AI) là hệ thống dùng LLM làm bộ não điều phối để tự chia nhỏ mục tiêu, hành động qua các công cụ và điều chỉnh kế hoạch theo phản hồi môi trường.",
+      "Tool Calling / Function Calling (Gọi hàm công cụ) cho phép mô hình phát yêu cầu chạy mã tìm kiếm web, truy vấn cơ sở dữ liệu hoặc đọc tệp thay vì chỉ đoán từ trí nhớ.",
+      "ReAct (Reasoning + Acting — Lập luận kết hợp Hành động) là mô hình vòng lặp: Suy nghĩ -> Gọi công cụ -> Quan sát kết quả -> Suy nghĩ tiếp cho tới khi đạt mục tiêu.",
+      "Guardrails & Human-in-the-loop (Rào chắn an toàn và Con người giám sát) đảm bảo tác tử không tự ý thực hiện hành động rủi ro cao như xóa dữ liệu hoặc chuyển tiền khi chưa được duyệt."
+    ],
+    "quiz": "Điểm khác biệt cốt lõi giữa một Chatbot hỏi-đáp thông thường và một AI Agent là gì?",
+    "answer": "Chatbot phản hồi thụ động một lượt cho mỗi câu hỏi, còn AI Agent có khả năng chủ động lặp qua nhiều bước: lập kế hoạch, gọi công cụ bên ngoài, tự đọc kết quả quan sát và sửa sai cho đến khi hoàn thành nhiệm vụ.",
+    "createdAt": "2026-11-14T08:00:00.000Z"
+  },
+  {
+    "id": 15,
+    "category": "Tâm lý & Sống",
+    "title": "Hệ thống 1 và Hệ thống 2 trong Tư duy Con người",
+    "summary": "Hiểu hai cơ chế vận hành song song của bộ não để biết khi nào nên tin trực giác và khi nào cần chậm lại phân tích.",
+    "points": [
+      "System 1 (Hệ thống 1 — Tư duy nhanh) hoạt động tự động, vô thức, tốn ít năng lượng, xử lý tốt việc quen thuộc như đọc nét mặt hay lái xe trên đường vắng.",
+      "System 2 (Hệ thống 2 — Tư duy chậm) đòi hỏi nỗ lực có ý thức, tập trung cao độ, dùng cho tính nhẩm phức tạp, so sánh hợp đồng hoặc ra quyết định lớn.",
+      "Cognitive Ease (Sự dễ chịu nhận thức) khiến não có xu hướng tin vào những gì quen thuộc, dễ đọc và lặp đi lặp lại dù chưa kiểm chứng tính đúng đắn.",
+      "Cognitive Biases (Thiên kiến nhận thức) thường nảy sinh khi ta để Hệ thống 1 trả lời thay cho một câu hỏi đáng lẽ cần Hệ thống 2 kiểm tra."
+    ],
+    "quiz": "Vì sao khi mệt mỏi hoặc thiếu ngủ vào cuối ngày, con người dễ đưa ra quyết định bốc đồng hoặc dễ bị thuyết phục bởi thông tin phiến diện?",
+    "answer": "Vì Hệ thống 2 tiêu tốn nhiều năng lượng và sự tự kiểm soát; khi mệt mỏi, bộ não tiết kiệm năng lượng bằng cách giao quyền quyết định cho Hệ thống 1 vốn phản ứng nhanh theo cảm tính.",
+    "createdAt": "2026-11-15T08:00:00.000Z"
+  },
+  {
+    "id": 16,
+    "category": "Tâm lý & Sống",
+    "title": "Vòng lặp Thói quen và Quy tắc Thay đổi Hành vi Bền vững",
+    "summary": "Thay đổi thói quen hiệu quả không dựa vào ý chí nhất thời mà dựa vào việc thiết kế lại tín hiệu và ma sát môi trường.",
+    "points": [
+      "Habit Loop (Vòng lặp thói quen) gồm 4 bước: Cue (Tín hiệu kích hoạt), Craving (Sự khao khát), Response (Hành động phản hồi) và Reward (Phần thưởng củng cố).",
+      "Friction Design (Thiết kế ma sát) nghĩa là giảm tối đa số bước để làm thói quen tốt (đặt sẵn sách trên bàn) và tăng số bước cản trở thói quen xấu (để điện thoại ở phòng khác).",
+      "Habit Stacking (Xếp chồng thói quen) gắn hành vi mới ngay sau một thói quen đã cố định: 'Ngay sau khi pha cà phê buổi sáng, tôi sẽ đọc 5 trang sách'.",
+      "Identity-based Habits (Thói quen dựa trên bản sắc) tập trung vào câu hỏi 'Tôi muốn trở thành kiểu người nào?' thay vì chỉ chạy theo một mục tiêu ngắn hạn."
+    ],
+    "quiz": "Nếu muốn duy trì thói quen ghi chú sau khi đọc sách mà thường xuyên bỏ dở vì lười, bước nào trong Thiết kế ma sát hiệu quả nhất?",
+    "answer": "Giảm tối đa ma sát khởi đầu bằng cách để sẵn sổ bút hoặc ứng dụng ghi chú mở sẵn ngay cạnh nơi đọc sách, đồng thời đặt mục tiêu cực nhỏ như chỉ cần viết 1 câu tóm tắt mỗi ngày.",
+    "createdAt": "2026-11-15T09:00:00.000Z"
+  },
+  {
+    "id": 17,
+    "category": "Tâm lý & Sống",
+    "title": "Làm việc Sâu (Deep Work) và Chi phí Chuyển đổi Chú ý",
+    "summary": "Bảo vệ khoảng thời gian tập trung không phân mảnh trong thế giới ngập tràn thông báo tức thời.",
+    "points": [
+      "Deep Work (Làm việc sâu) là trạng thái tập trung toàn bộ nhận thức vào một nhiệm vụ khó không bị xao nhãng, tạo ra giá trị tri thức khó sao chép.",
+      "Attention Residue (Dư lượng chú ý) là hiện tượng một phần tâm trí vẫn vương vấn ở việc vừa làm khi bạn vội chuyển sang kiểm tra tin nhắn rồi quay lại.",
+      "Shallow Work (Việc nông) gồm các tác vụ lặp lại, trả lời email vụn vặt, họp không trọng tâm — dễ làm ta cảm thấy bận rộn nhưng ít tạo bước tiến lớn.",
+      "Time Blocking (Chia khối thời gian) đặt lịch cứng các khung giờ tập trung 60–90 phút mỗi ngày trước khi để lịch làm việc bị lấp đầy bởi yêu cầu của người khác."
+    ],
+    "quiz": "Việc liếc nhanh điện thoại 30 giây trong lúc đang viết hoặc lập trình gây hại nhiều hơn 30 giây bị mất như thế nào?",
+    "answer": "Nó tạo ra Attention Residue (Dư lượng chú ý), khiến não mất thêm từ 10 đến 20 phút sau đó mới đạt lại được độ sâu tập trung ban đầu.",
+    "createdAt": "2026-11-15T10:00:00.000Z"
+  },
+  {
+    "id": 18,
+    "category": "Tâm lý & Sống",
+    "title": "Lý thuyết Tải trọng Nhận thức và Cách Học Không Quá Tải",
+    "summary": "Tại sao đọc nhồi nhét hàng giờ lại mau quên, và cách sắp xếp thông tin vừa sức với bộ nhớ làm việc.",
+    "points": [
+      "Working Memory (Bộ nhớ làm việc) chỉ giữ được khoảng 4 cụm thông tin cùng lúc trong vài chục giây trước khi bị tràn hoặc rơi rụng.",
+      "Intrinsic Load (Tải trọng nội tại) là độ khó tự nhiên của kiến thức; Extraneous Load (Tải trọng ngoại lai) là sự rối rắm do trình bày rườm rà hoặc thông báo gây nhiễu.",
+      "Chunking (Gom nhóm khái niệm) nén nhiều chi tiết rời rạc thành một mô hình tinh thần thống nhất để giải phóng chỗ trống cho bộ nhớ làm việc.",
+      "Germane Load (Tải trọng hữu ích) là phần nỗ lực não dùng để nối kiến thức mới với những gì bạn đã hiểu rõ từ trước."
+    ],
+    "quiz": "Khi học một chủ đề kỹ thuật mới, việc giải thích mọi từ viết tắt bằng hình ảnh ví dụ quen thuộc giúp giảm loại tải trọng nào?",
+    "answer": "Giúp giảm Extraneous Load (Tải trọng ngoại lai) do không phải mất sức đoán nghĩa thuật ngữ, đồng thời tăng Germane Load (Tải trọng hữu ích) để liên kết với kiến thức nền sẵn có.",
+    "createdAt": "2026-11-15T11:00:00.000Z"
+  },
+  {
+    "id": 19,
+    "category": "Tâm lý & Sống",
+    "title": "Lặp lại Ngắt quãng (Spaced Repetition) và Gợi nhớ Chủ động",
+    "summary": "Phương pháp học đi ngược lại thói quen đọc lại thụ động để chuyển tri thức vào trí nhớ dài hạn.",
+    "points": [
+      "Forgetting Curve (Đường cong quên lãng của Ebbinghaus) cho thấy phần lớn kiến thức mới rơi rụng rất nhanh trong 24–48 giờ đầu nếu không được ôn lại.",
+      "Active Recall (Gợi nhớ chủ động) buộc não tự tìm câu trả lời từ bên trong trước khi mở đáp án, mạnh hơn gấp nhiều lần so với việc đọc lướt lại gạch chân.",
+      "Spaced Repetition (Lặp lại ngắt quãng) ôn lại kiến thức đúng thời điểm sắp quên với khoảng cách tăng dần: 1 ngày, 3 ngày, 7 ngày, 21 ngày.",
+      "Desirable Difficulty (Độ khó mong muốn) giải thích vì sao cảm giác hơi vất vả khi tự nhớ lại chính là tín hiệu cho thấy liên kết thần kinh đang được củng cố."
+    ],
+    "quiz": "Tại sao đọc lại một chương sách ba lần liên tiếp trong một tối thường tạo cảm giác rất hiểu nhưng vài tuần sau lại quên sạch?",
+    "answer": "Đọc lại liên tiếp tạo ra 'ảo giác thành thạo' (Illusion of Competence) vì mắt thấy chữ quen thuộc, nhưng không buộc não thực hành Active Recall (Gợi nhớ chủ động) theo khoảng thời gian ngắt quãng.",
+    "createdAt": "2026-11-15T12:00:00.000Z"
+  },
+  {
+    "id": 20,
+    "category": "Tâm lý & Sống",
+    "title": "Định kiến Xác nhận và Nghệ thuật Tư duy Phản biện",
+    "summary": "Nhận diện xu hướng tự nhiên muốn tìm bằng chứng ủng hộ niềm tin sẵn có để giữ đầu óc khách quan hơn.",
+    "points": [
+      "Confirmation Bias (Thiên kiến xác nhận) là xu hướng vô thức đi tìm, nhớ kỹ và diễn giải thông tin sao cho khớp với điều ta vốn tin từ trước.",
+      "Motivated Reasoning (Lập luận có động cơ) khiến ta đặt tiêu chuẩn kiểm chứng cực kỳ khắt khe cho ý kiến trái chiều nhưng lại dễ dãi với ý kiến đồng thuận.",
+      "Steelmanning (Kỹ thuật Người thép) là tự diễn đạt lại luận điểm của phía đối lập theo cách mạnh mẽ và công tâm nhất trước khi phản biện.",
+      "Pre-mortem (Phân tích tiền tử) giả định trước rằng dự án hoặc quyết định hiện tại đã thất bại sau 1 năm để ép mình tìm ra các điểm mù ngay từ bây giờ."
+    ],
+    "quiz": "Kỹ thuật Steelmanning khác với Strawmanning (Ngụy biện bù nhìn rơm) ở điểm nào?",
+    "answer": "Strawmanning bóp méo ý đối phương thành phiên bản yếu ớt để dễ công kích, còn Steelmanning cố gắng xây dựng lập luận đối lập ở dạng thuyết phục nhất để kiểm tra xem quan điểm của chính mình có thực sự vững hay không.",
+    "createdAt": "2026-11-15T13:00:00.000Z"
+  },
+  {
+    "id": 21,
+    "category": "Tâm lý & Sống",
+    "title": "Khắc kỷ Hiện đại: Vòng tròn Kiểm soát và Sự Bình thản",
+    "summary": "Phân tách rành mạch điều nằm trong tầm tay và điều nằm ngoài khả năng để không lãng phí năng lượng tinh thần.",
+    "points": [
+      "Dichotomy of Control (Lưỡng phân quyền kiểm soát) chia mọi sự việc thành hai nhóm: suy nghĩ, thái độ, hành động của bản thân (kiểm soát được) và kết quả bên ngoài, phản ứng của người khác (không kiểm soát hoàn toàn).",
+      "Negative Visualization (Hình dung nghịch cảnh có chủ đích) nhắc mình trân trọng những điều bình dị đang có và chuẩn bị tâm thế bình tĩnh trước biến cố.",
+      "Amor Fati (Yêu lấy định mệnh) là thái độ đón nhận cả trở ngại lẫn thất bại như nguyên liệu thô để rèn luyện bản lĩnh thay vì than trách.",
+      "Emotional Pause (Khoảng dừng giữa kích thích và phản ứng) giúp ta không phản ứng bộc phát trong cơn giận mà lựa chọn cách đáp trả khôn ngoan."
+    ],
+    "quiz": "Áp dụng Dichotomy of Control trước một buổi thuyết trình hoặc phỏng vấn quan trọng sẽ thay đổi cách chuẩn bị ra sao?",
+    "answer": "Dồn 100% tâm sức vào chất lượng chuẩn bị, luyện tập và sự chân thành (những thứ kiểm soát được), đồng thời buông bỏ nỗi lo âu thái quá về việc ban giám khảo có chấm đậu hay không.",
+    "createdAt": "2026-11-15T14:00:00.000Z"
+  },
+  {
+    "id": 22,
+    "category": "Tâm lý & Sống",
+    "title": "Hiệu ứng Ác cảm Mất mát và Nghịch lý Lựa chọn",
+    "summary": "Vì sao nỗi đau mất đi thứ đang có lớn hơn niềm vui đạt được thứ tương đương, và quá nhiều lựa chọn lại làm ta tê liệt.",
+    "points": [
+      "Loss Aversion (Ác cảm mất mát) trong tâm lý học hành vi chỉ ra nỗi buồn khi mất 1 triệu đồng thường nặng nề hơn gấp đôi niềm vui khi nhặt được 1 triệu đồng.",
+      "Sunk Cost Fallacy (Ngụy biện chi phí chìm) khiến ta tiếp tục đâm lao vào một dự án hay mối quan hệ không hiệu quả chỉ vì tiếc thời gian và tiền bạc đã bỏ ra trong quá khứ.",
+      "Status Quo Bias (Thiên kiến giữ nguyên hiện trạng) làm ta ngại thay đổi dù phương án mới tốt hơn rõ rệt chỉ vì sợ rủi ro mất mát quen thuộc.",
+      "Paradox of Choice (Nghịch lý lựa chọn) chứng minh khi có quá nhiều phương án ngang ngửa, người ta dễ trì hoãn quyết định hoặc hối tiếc sau khi đã chọn."
+    ],
+    "quiz": "Câu hỏi thực tế nào giúp thoát khỏi Sunk Cost Fallacy (Ngụy biện chi phí chìm) nhanh nhất?",
+    "answer": "Hãy tự hỏi: 'Nếu hôm nay mình bắt đầu lại từ con số 0 và chưa từng đầu tư gì vào việc này trước đây, mình có sẵn sàng chọn bước tiếp vào nó ngay lúc này không?'",
+    "createdAt": "2026-11-15T15:00:00.000Z"
+  },
+  {
+    "id": 23,
+    "category": "Tâm lý & Sống",
+    "title": "Trạng thái Dòng chảy (Flow) và Cách Tạo Nhịp Sống Cân bằng",
+    "summary": "Điểm giao hoàn hảo giữa độ thử thách của công việc và kỹ năng cá nhân để làm việc say mê mà không kiệt sức.",
+    "points": [
+      "Flow State (Trạng thái dòng chảy) là cảm giác đắm chìm hoàn toàn vào hoạt động hiện tại đến mức quên cả thời gian và nỗi tự ti.",
+      "Challenge-Skill Balance (Cân bằng Thử thách - Kỹ năng) là điều kiện tiên quyết: thử thách quá dễ gây chán nản, quá khó gây lo âu; vùng Flow nằm ngay nhỉnh hơn kỹ năng hiện tại một chút.",
+      "Clear Goals & Immediate Feedback (Mục tiêu rõ ràng và Phản hồi tức thì) giúp tâm trí biết ngay mình đang đi đúng hướng hay cần điều chỉnh từng phút.",
+      "Deliberate Rest (Nghỉ ngơi chủ động) như đi bộ không nghe nhạc, ngủ đủ giấc và tách khỏi màn hình là nửa còn lại bắt buộc để duy trì hiệu suất lâu dài."
+    ],
+    "quiz": "Khi cảm thấy chán nản hoặc trì trệ với một công việc lặp đi lặp lại quá dễ, làm thế nào để kéo bản thân về vùng Flow?",
+    "answer": "Tăng nhẹ độ thử thách bằng cách đặt giới hạn thời gian chặt hơn, nâng tiêu chuẩn chất lượng chi tiết hoặc tự đặt ra một ràng buộc sáng tạo mới để vừa khớp với kỹ năng hiện có.",
+    "createdAt": "2026-11-15T16:00:00.000Z"
+  },
+  {
+    "id": 24,
+    "category": "Kinh tế",
+    "title": "Lạm phát, Lãi suất Điều hành và Chu kỳ Tiền tệ",
+    "summary": "Hiểu cơ chế ngân hàng trung ương dùng lãi suất làm van điều tiết dòng tiền để cân bằng giữa tăng trưởng và ổn định giá cả.",
+    "points": [
+      "Inflation (Lạm phát) là sự gia tăng liên tục của mức giá chung theo thời gian, làm giảm sức mua thực tế của mỗi đồng tiền bạn nắm giữ.",
+      "CPI (Consumer Price Index — Chỉ số giá tiêu dùng) đo lường mức thay đổi giá của rổ hàng hóa và dịch vụ thiết yếu đại diện cho chi tiêu hộ gia đình.",
+      "Policy Interest Rate (Lãi suất điều hành) là công cụ chính của Central Bank (Ngân hàng Trung ương): tăng lãi suất giúp hút tiền về để kiềm chế lạm phát nhưng làm chậm vay vốn và đầu tư; giảm lãi suất kích thích kinh tế khi suy thoái.",
+      "GDP (Gross Domestic Product — Tổng sản phẩm quốc nội) là tổng giá trị thị trường của toàn bộ hàng hóa và dịch vụ cuối cùng được sản xuất trong phạm vi một quốc gia."
+    ],
+    "quiz": "Khi lạm phát tăng cao kéo dài, vì sao Ngân hàng Trung ương thường chấp nhận rủi ro kinh tế tăng trưởng chậm lại để tăng lãi suất điều hành?",
+    "answer": "Vì tăng lãi suất làm chi phí vay vốn đắt hơn và gửi tiết kiệm hấp dẫn hơn, từ đó giảm tổng cầu chi tiêu quá nóng trong xã hội để hạ nhiệt giá cả và bảo vệ giá trị đồng tiền.",
+    "createdAt": "2026-11-16T00:00:00.000Z"
+  }
+]

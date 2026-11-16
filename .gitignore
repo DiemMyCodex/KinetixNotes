@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+build
+coverage
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vercel
+.output

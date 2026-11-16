@@ -1,0 +1,6 @@
+{
+  "name": "KinetixNotes",
+  "description": "Website đọc sách, ghi chú và lưu trữ tri thức theo phong cách tối giản biên tập.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,63 @@
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
+
+const projectRoot = typeof import.meta.dirname === 'string'
+  ? import.meta.dirname
+  : path.dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig(() => {
+  return {
+    plugins: [
+      react(),
+      tailwindcss(),
+      // Copies src/assets into dist/ so root-relative URLs like
+      // "/src/assets/images/..." (e.g. generate_image output) still resolve
+      // in production builds. Do not remove.
+      {
+        name: 'copy-unbundled-src-assets',
+        apply: 'build',
+        closeBundle(error?: Error): void {
+          if (error) {
+            return;
+          }
+          const distDir = path.resolve(projectRoot, 'dist');
+          const srcAssets = path.resolve(projectRoot, 'src/assets');
+          const distAssets = path.resolve(distDir, 'src/assets');
+          if (fs.existsSync(distDir) && fs.existsSync(srcAssets)) {
+            fs.cpSync(srcAssets, distAssets, { recursive: true, force: true });
+          }
+        },
+      },
+    ],
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+      alias: {
+        '@': projectRoot,
+      },
+    },
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
+      sourcemap: false,
+      chunkSizeWarningLimit: 1000,
+    },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'lucide-react',
+        'motion/react',
+        '@supabase/supabase-js',
+      ],
+    },
+    server: {
+      hmr: process.env.DISABLE_HMR !== 'true',
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+  };
+});
