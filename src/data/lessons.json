@@ -506,5 +506,35 @@
     "quiz": "Một mô hình AI dùng kiến trúc MoE có tổng cộng 8 'tổ chuyên gia' (tổng 80 tỷ tham số), nhưng mỗi lần đoán 1 chữ thì Router chỉ đánh thức đúng 2 tổ chuyên gia (khoảng 20 tỷ tham số). So với mô hình truyền thống (Dense 80 tỷ tham số) phải bật cả 80 tỷ cùng lúc, mô hình MoE lợi hơn ở điểm nào?",
     "answer": "Nó vẫn giữ được kho kiến thức khổng lồ của 80 tỷ tham số, nhưng tốc độ trả lời nhanh hơn và tốn ít điện/GPU hơn gấp nhiều lần vì mỗi lượt chỉ phải tính toán trên 20 tỷ tham số.",
     "createdAt": "2026-11-17T02:50:12.482Z"
+  },
+  {
+    "id": 35,
+    "category": "Trí tuệ AI",
+    "title": "Bài 17: Speculative Decoding — Nháp trước, duyệt sau để AI nhả chữ siêu tốc",
+    "summary": "Speculative Decoding (Giải mã suy đoán) ghép một mô hình nhỏ siêu nhanh làm nháp nhiều chữ cùng lúc rồi để mô hình lớn kiểm duyệt lại một lượt, giúp AI trả lời nhanh gấp 2-3 lần mà không giảm trí khôn.",
+    "points": [
+      "Vấn đề cổ chai khi AI trả lời: Bình thường một Large Language Model (LLM — Mô hình ngôn ngữ lớn) phải chạy từ đầu đến cuối bộ não khổng lồ của nó chỉ để nặn ra ĐÚNG 1 token (mảnh từ) tiếp theo. Xong 1 chữ lại chạy lại từ đầu để nặn chữ thứ 2. Kiểu 'vừa nghĩ vừa gõ từng chữ' này gọi là Autoregressive Decoding (Giải mã tự hồi quy — lấy chữ trước làm đầu vào đoán chữ sau), khiến GPU (Graphics Processing Unit — Bộ xử lý đồ hoạ) bị nghẽn băng thông bộ nhớ vì phải lôi hàng chục tỷ tham số ra đọc đi đọc lại cho mỗi chữ.",
+      "Ý tưởng 'Sếp tổng và Thư ký' của Speculative Decoding (Giải mã suy đoán): Thay vì bắt 'Sếp tổng' — tức Target Model (Mô hình đích — mô hình khổng lồ, cực khôn nhưng chậm chạp) — tự gõ từng chữ, người ta thuê thêm một 'Thư ký' — tức Draft Model (Mô hình nháp — mô hình tí hon, nhẹ hều, gõ siêu tốc nhưng đôi lúc hơi ngáo).",
+      "Quy trình 2 bước cực mượt: Bước 1, Draft Model (Mô hình nháp) chạy vù vù đoán trước một lèo 4-5 token (mảnh từ) tiếp theo, ví dụ: 'Hôm nay trời rất đẹp'. Bước 2, Target Model (Mô hình đích) không cần nghĩ từng chữ nữa, mà đọc cả cụm 5 chữ đó CÙNG MỘT LÚC trong đúng 1 lần tính toán song song (Parallel Verification — Kiểm chứng song song).",
+      "Nếu thư ký đoán trúng 4 chữ đầu ('Hôm nay trời rất') và trật ở chữ thứ 5 ('đẹp' thành 'nắng'), Sếp tổng gật đầu duyệt luôn 4 chữ đầu, sửa lại chữ thứ 5 thành 'nắng', rồi thư ký lại chạy tiếp từ đó. Nhờ GPU (Bộ xử lý đồ hoạ) xử lý song song 5 chữ tốn thời gian gần bằng xử lý 1 chữ, tốc độ nhả chữ tăng vọt 2-3 lần mà chất lượng câu trả lời vẫn 100% y hệt do Sếp tổng tự viết — không hề bị ngu đi một tẹo nào!"
+    ],
+    "quiz": "Theo mày, kỹ thuật Speculative Decoding (Giải mã suy đoán) sẽ giúp tăng tốc mạnh hơn trong tác vụ nào: viết code (lập trình) hay làm thơ tự do sáng tạo? Tại sao?",
+    "answer": "Viết code được tăng tốc mạnh hơn rất nhiều! Vì code có cú pháp cứng nhắc, nhiều từ khoá và cấu trúc lặp lại dễ đoán (như dấu ngoặc, 'return', 'const', tên biến vừa khai báo), nên Draft Model (Mô hình nháp) dễ đoán trúng một lèo nhiều token liên tiếp. Ngược lại, làm thơ tự do có độ sáng tạo và bất ngờ cao, mô hình nháp dễ đoán trật khiến mô hình đích phải sửa lại liên tục nên ít tăng tốc hơn.",
+    "createdAt": "2026-11-17T18:43:04.409Z"
+  },
+  {
+    "id": 36,
+    "category": "Trí tuệ AI",
+    "title": "Bài 17: Speculative Decoding — Nháp trước, duyệt sau để AI nhả chữ siêu tốc",
+    "summary": "Speculative Decoding (Giải mã suy đoán) ghép một mô hình nhỏ siêu nhanh làm nháp nhiều chữ cùng lúc rồi để mô hình lớn kiểm duyệt lại một lượt, giúp AI trả lời nhanh gấp 2-3 lần mà không giảm trí khôn.",
+    "points": [
+      "Vấn đề cổ chai khi AI trả lời: Bình thường một Large Language Model (LLM — Mô hình ngôn ngữ lớn) phải chạy từ đầu đến cuối bộ não khổng lồ của nó chỉ để nặn ra ĐÚNG 1 token (mảnh từ) tiếp theo. Xong 1 chữ lại chạy lại từ đầu để nặn chữ thứ 2. Kiểu 'vừa nghĩ vừa gõ từng chữ' này gọi là Autoregressive Decoding (Giải mã tự hồi quy — lấy chữ trước làm đầu vào đoán chữ sau), khiến GPU (Graphics Processing Unit — Bộ xử lý đồ hoạ) bị nghẽn băng thông bộ nhớ vì phải lôi hàng chục tỷ tham số ra đọc đi đọc lại cho mỗi chữ.",
+      "Ý tưởng 'Sếp tổng và Thư ký' của Speculative Decoding (Giải mã suy đoán): Thay vì bắt 'Sếp tổng' — tức Target Model (Mô hình đích — mô hình khổng lồ, cực khôn nhưng chậm chạp) — tự gõ từng chữ, người ta thuê thêm một 'Thư ký' — tức Draft Model (Mô hình nháp — mô hình tí hon, nhẹ hều, gõ siêu tốc nhưng đôi lúc hơi ngáo).",
+      "Quy trình 2 bước cực mượt: Bước 1, Draft Model (Mô hình nháp) chạy vù vù đoán trước một lèo 4-5 token (mảnh từ) tiếp theo, ví dụ: 'Hôm nay trời rất đẹp'. Bước 2, Target Model (Mô hình đích) không cần nghĩ từng chữ nữa, mà đọc cả cụm 5 chữ đó CÙNG MỘT LÚC trong đúng 1 lần tính toán song song (Parallel Verification — Kiểm chứng song song).",
+      "Nếu thư ký đoán trúng 4 chữ đầu ('Hôm nay trời rất') và trật ở chữ thứ 5 ('đẹp' thành 'nắng'), Sếp tổng gật đầu duyệt luôn 4 chữ đầu, sửa lại chữ thứ 5 thành 'nắng', rồi thư ký lại chạy tiếp từ đó. Nhờ GPU (Bộ xử lý đồ hoạ) xử lý song song 5 chữ tốn thời gian gần bằng xử lý 1 chữ, tốc độ nhả chữ tăng vọt 2-3 lần mà chất lượng câu trả lời vẫn 100% y hệt do Sếp tổng tự viết — không hề bị ngu đi một tẹo nào!"
+    ],
+    "quiz": "Theo mày, kỹ thuật Speculative Decoding (Giải mã suy đoán) sẽ giúp tăng tốc mạnh hơn trong tác vụ nào: viết code (lập trình) hay làm thơ tự do sáng tạo? Tại sao?",
+    "answer": "Viết code được tăng tốc mạnh hơn rất nhiều! Vì code có cú pháp cứng nhắc, nhiều từ khoá và cấu trúc lặp lại dễ đoán (như dấu ngoặc, 'return', 'const', tên biến vừa khai báo), nên Draft Model (Mô hình nháp) dễ đoán trúng một lèo nhiều token liên tiếp. Ngược lại, làm thơ tự do có độ sáng tạo và bất ngờ cao, mô hình nháp dễ đoán trật khiến mô hình đích phải sửa lại liên tục nên ít tăng tốc hơn.",
+    "createdAt": "2026-11-17T18:43:08.073Z"
   }
 ]
