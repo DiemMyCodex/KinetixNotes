@@ -521,5 +521,20 @@
     "quiz": "Theo mày, kỹ thuật Speculative Decoding (Giải mã suy đoán) sẽ giúp tăng tốc mạnh hơn trong tác vụ nào: viết code (lập trình) hay làm thơ tự do sáng tạo? Tại sao?",
     "answer": "Viết code được tăng tốc mạnh hơn rất nhiều! Vì code có cú pháp cứng nhắc, nhiều từ khoá và cấu trúc lặp lại dễ đoán (như dấu ngoặc, 'return', 'const', tên biến vừa khai báo), nên Draft Model (Mô hình nháp) dễ đoán trúng một lèo nhiều token liên tiếp. Ngược lại, làm thơ tự do có độ sáng tạo và bất ngờ cao, mô hình nháp dễ đoán trật khiến mô hình đích phải sửa lại liên tục nên ít tăng tốc hơn.",
     "createdAt": "2026-11-17T18:43:04.409Z"
+  },
+  {
+    "id": 36,
+    "category": "Tâm lý & Sống",
+    "title": "Tâm lý Bài 10: Nghệ thuật thu hút — Muốn được quý, hãy nhường đèn sân khấu",
+    "summary": "Người được nhiều người yêu quý không phải là người nói hay nhất hay khoe giỏi nhất, mà là người biết lắng nghe chủ động, nhớ tên và tạo cảm giác dễ chịu khi người khác ở cạnh.",
+    "points": [
+      "Bỏ bẫy cố tỏ ra thú vị, chuyển sang Active Listening (Lắng nghe chủ động — nghe để hiểu chứ không phải chờ đến lượt mình nói): Nhiều người hay gồng lên kể chuyện hài hoặc khoe chiến tích để gây ấn tượng, nhưng thật ra ai trên đời cũng thích nói về bản thân mình nhất. Khi mày đặt một câu hỏi mở — Open-ended Question (Câu hỏi gợi mở không trả lời bằng Có/Không, ví dụ 'Sao mày lại chọn học ngành này?' thay vì 'Học vui không?') — rồi chăm chú nghe, người đối diện sẽ tự thấy mày cực kỳ tinh tế và dễ mến.",
+      "Benjamin Franklin Effect (Hiệu ứng Ben Franklin — nhờ vả nhỏ tạo thiện cảm lớn): Nghe hơi ngược đời nhưng khi mày nhờ ai đó giúp một việc nhỏ (như hỏi xin ý kiến, nhờ chỉ chỗ mua đồ, hay mượn đồ vặt), não của họ sẽ tự động hợp lý hoá: 'Mình giúp nó chứng tỏ mình cũng quý nó'. Nhờ đúng cách giúp phá băng cực nhanh mà không hề thảo mai.",
+      "Nhớ tên riêng và khen cụ thể (Genuine Appreciation — Sự ghi nhận chân thành): Sách Đắc Nhân Tâm nhấn mạnh âm thanh ngọt ngào nhất với mỗi người chính là tên của họ. Ngoài ra, thay vì khen chung chung kiểu 'nay nhìn xịn thế', hãy khen vào chi tiết hoặc nỗ lực của họ (ví dụ 'gu phối màu áo này hay phết' hoặc 'mày giải thích đoạn này dễ hiểu ghê'), họ sẽ nhớ mày rất lâu.",
+      "Warmth & Mirroring (Sự ấm áp và Hiệu ứng soi gương): Mày không cần làm cây hài cho cả nhóm cười mới được thích. Chỉ cần thả lỏng vai, cất điện thoại khi nói chuyện, gật đầu nhẹ theo nhịp kể của đối phương và cười tự nhiên lúc mới gặp — cảm giác an toàn và được tôn trọng chính là thứ kéo người khác muốn chơi với mày lâu dài."
+    ],
+    "quiz": "Gặp một người bạn mới trong lớp hoặc quán nước mà muốn họ có thiện cảm ngay, giữa 2 cách: (A) Kể một chiến tích cực ngầu của bản thân để họ nể, và (B) Hỏi xin lời khuyên của họ về một món đồ hay chủ đề họ rành — cách nào hiệu quả hơn theo tâm lý học và vì sao?",
+    "answer": "Cách (B) hiệu quả hơn hẳn! Cách (A) dễ tạo cảm giác khoe khoang hoặc cạnh tranh ngầm; còn cách (B) kích hoạt cùng lúc cả Active Listening (Lắng nghe chủ động) lẫn Benjamin Franklin Effect (Hiệu ứng Ben Franklin), khiến đối phương thấy mình có giá trị và tự động sinh ra thiện cảm với mày.",
+    "createdAt": "2026-11-17T20:19:48.647Z"
   }
 ]
