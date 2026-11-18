@@ -255,9 +255,15 @@ Sau khi hoàn tất cấu hình, tiến hành chạy kịch bản kiểm thử t
   * Giao diện cập nhật tức thì, bài học mới xuất hiện đầu danh sách.
   * Mở trình duyệt ẩn danh khác kiểm tra: Bài học mới lập tức hiển thị công khai cho mọi người.
 
-### Nhóm 4: Kiểm tra khả năng chịu lỗi & SPA Routing
-- [ ] Nhấn F5 tại các đường dẫn con hoặc hash route (ví dụ `/#register`, `/#login`): Không bị lỗi 404 Not Found từ máy chủ Vercel.
-- [ ] Ngắt kết nối mạng hoặc thử tắt tạm thời Supabase: Ứng dụng tự động chuyển đổi sang nguồn bài học mặc định tích hợp sẵn (bundled catalog fallback), không xuất hiện màn hình trắng hoặc crash giao diện.
+### Nhóm 4: Kiểm tra SPA Routing, PWA & khả năng chịu lỗi
+- [ ] Nhấn F5 tại các đường dẫn con `/login`, `/register`, `/bai/12`: Không bị 404 từ Vercel (rewrite `/(.*)` → `/index.html`, asset tĩnh được ưu tiên trước rewrite).
+- [ ] Mở `/bai/12` trong tab mới: Đúng bài học được chọn, tiêu đề tab cập nhật theo bài.
+- [ ] Ngắt kết nối mạng hoặc tắt tạm Supabase: Ứng dụng chuyển sang catalog mặc định, không màn hình trắng.
+- [ ] Sau lần tải đầu ở production, bật DevTools → Application → Service Workers: `sw.js` ở trạng thái activated; reload khi offline vẫn mở được vỏ app.
+- [ ] Kiểm tra `sw.js`, `manifest.webmanifest`, `og.png`, `/icons/icon-192.png` trả 200 và đúng `Content-Type`.
+- [ ] Mở DevTools → Application → Manifest: không lỗi icon, có `name`, `theme_color`, `display: standalone`.
+
+> Khi thay đổi chiến lược cache của service worker, tăng hằng số `VERSION` trong `public/sw.js` để trình duyệt dọn cache cũ ở sự kiện `activate`.
 
 ---
 
@@ -269,3 +275,5 @@ Sau khi hoàn tất cấu hình, tiến hành chạy kịch bản kiểm thử t
 | **Lỗi `42501`** khi thêm bài học dù đã đăng nhập đúng email | Claim `email` trong JWT không khớp do chữ hoa/thường hoặc tài khoản chưa xác thực email | Vào Supabase Auth -> Users, kiểm tra email phải khớp chính xác `diemmycodex@gmail.com` và đã có thời gian *Confirmed at*. Đăng xuất và đăng nhập lại trên web để nhận JWT token mới. |
 | **Màn hình trắng hoặc không kết nối được Supabase trên Vercel** | Chưa cấu hình hoặc cấu hình sai biến môi trường `VITE_SUPABASE_*` | Kiểm tra lại mục Environment Variables trên Vercel, đảm bảo biến có tiền tố `VITE_` và thực hiện **Redeploy**. |
 | **Bấm link xác nhận email dẫn về `localhost` thay vì Vercel** | Chưa cập nhật `Site URL` trong Supabase Auth | Cập nhật `Site URL` và `Redirect URLs` tại Authentication -> URL Configuration thành domain Vercel. |
+| **Sau khi deploy vẫn thấy giao diện cũ** | Service worker đang phục vụ cache shell cũ | Mở DevTools → Application → Service Workers → **Update**, hoặc tăng `VERSION` trong `public/sw.js` rồi redeploy. |
+| **Deep link `/bai/:id` trả về trang chủ** | Rewrite trong `vercel.json` bị thay đổi | Giữ `rewrites` về `/(.*)` → `/index.html`; không chặn nhầm `assets/`, `sw.js`, `manifest.webmanifest`. |

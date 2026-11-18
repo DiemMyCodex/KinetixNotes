@@ -44,6 +44,16 @@ export default defineConfig(() => {
       emptyOutDir: true,
       sourcemap: false,
       chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (!id.includes('node_modules')) return undefined;
+            if (id.includes('@supabase') || id.includes('postgrest')) return 'vendor-supabase';
+            if (id.includes('react-dom') || id.includes('/react/')) return 'vendor-react';
+            return undefined;
+          },
+        },
+      },
     },
     optimizeDeps: {
       include: [

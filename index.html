@@ -2,26 +2,57 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
-    <title>KinetixNotes — Tủ sách & Lưu trữ Tri thức</title>
+    <meta name="theme-color" content="#faf9f6" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>KinetixNotes — Tủ sách &amp; Lưu trữ Tri thức</title>
     <meta
       name="description"
-      content="KinetixNotes — Không gian đọc sách, hệ thống hóa kiến thức và ôn tập chủ động theo phong cách tối giản biên tập."
+      content="KinetixNotes — Tủ sách vi mô về Máy tính, Trí tuệ AI, Tâm lý & Sống và Kinh tế. Đọc tập trung, ôn tập chủ động, đồng bộ tiến độ."
     />
-    <meta property="og:title" content="KinetixNotes — Tủ sách & Lưu trữ Tri thức" />
+    <link rel="canonical" href="https://kinetix-notes.vercel.app/" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="KinetixNotes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <meta property="og:site_name" content="KinetixNotes" />
+    <meta property="og:title" content="KinetixNotes — Đọc ít hơn, nhớ lâu hơn" />
     <meta
       property="og:description"
-      content="Không gian đọc sách, hệ thống hóa kiến thức và ôn tập chủ động theo phong cách tối giản biên tập."
+      content="36 bài học vi mô về Máy tính, Trí tuệ AI, Tâm lý & Sống và Kinh tế — kèm ôn tập chủ động để kiến thức thực sự nằm lại."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kinetix-notes.vercel.app/" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:image" content="https://kinetix-notes.vercel.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="KinetixNotes — Đọc ít hơn, nhớ lâu hơn" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap"
-      rel="stylesheet"
+    <meta name="twitter:title" content="KinetixNotes — Đọc ít hơn, nhớ lâu hơn" />
+    <meta
+      name="twitter:description"
+      content="Tủ sách vi mô về Máy tính, Trí tuệ AI, Tâm lý & Sống và Kinh tế, kèm ôn tập chủ động."
     />
+    <meta name="twitter:image" content="https://kinetix-notes.vercel.app/og.png" />
+
+    <style>
+      html {
+        background-color: #faf9f6;
+      }
+      html.dark {
+        background-color: #0c0d0f;
+      }
+      #root:empty {
+        min-height: 60vh;
+      }
+    </style>
+
     <script>
       (function () {
         try {
@@ -32,6 +63,9 @@
           if (saved === 'dark' || (!saved && prefersDark)) {
             document.documentElement.classList.add('dark');
             document.documentElement.style.colorScheme = 'dark';
+            document
+              .querySelector('meta[name="theme-color"]')
+              .setAttribute('content', '#0c0d0f');
           } else {
             document.documentElement.classList.remove('dark');
             document.documentElement.style.colorScheme = 'light';
@@ -39,9 +73,21 @@
         } catch (e) {}
       })();
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="padding: 24px; font-family: system-ui, sans-serif">
+        KinetixNotes cần JavaScript để hiển thị tủ sách. Vui lòng bật JavaScript và tải lại trang.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

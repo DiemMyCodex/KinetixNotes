@@ -1,14 +1,23 @@
 import type { User } from '@supabase/supabase-js';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AddLessonModal } from './components/AddLessonModal';
-import { AuthView } from './components/AuthView';
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { CategoryTabs } from './components/CategoryTabs';
 import { LessonReader } from './components/LessonReader';
 import { LibrarySidebar } from './components/LibrarySidebar';
+import { MobileTabBar } from './components/MobileTabBar';
 import { TopHeader } from './components/TopHeader';
 import lessonsJson from './data/lessons.json';
-import { supabase } from './lib/supabase';
+import { lessonPath, parseRoute } from './lib/router';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { effectiveStreak, persistStreak, readStreak, registerVisit } from './lib/streak';
 import {
   canUserManageLessons,
   mergeCatalogLessons,
@@ -35,6 +44,25 @@ import {
   getProgressStats,
 } from './utils/lessons';
 
+const AuthView = lazy(() =>
+  import('./components/AuthView').then((module) => ({ default: module.AuthView }))
+);
+const AddLessonModal = lazy(() =>
+  import('./components/AddLessonModal').then((module) => ({
+    default: module.AddLessonModal,
+  }))
+);
+const CommandPalette = lazy(() =>
+  import('./components/CommandPalette').then((module) => ({
+    default: module.CommandPalette,
+  }))
+);
+const ShortcutsDialog = lazy(() =>
+  import('./components/ShortcutsDialog').then((module) => ({
+    default: module.ShortcutsDialog,
+  }))
+);
+
 const STORAGE_KEYS = {
   mastered: 'kinetix-mastered-ids',
   fontSize: 'kinetix-font-size',
@@ -48,10 +76,7 @@ const DEFAULT_LESSONS = lessonsJson as Lesson[];
 
 function readInitialRoute(): AuthRoute {
   if (typeof window === 'undefined') return 'reader';
-  const path = window.location.pathname.toLowerCase();
-  if (path === '/login') return 'login';
-  if (path === '/register') return 'register';
-  return 'reader';
+  return parseRoute(window.location.pathname).authRoute;
 }
 
 function readInitialTheme(): ThemeMode {
@@ -98,12 +123,12 @@ function readInitialFontSize(): number {
   return DEFAULT_FONT_SIZE;
 }
 
-function readInitialLessonId(lessons: readonly Lesson[]): number | null {
+function readStoredLessonId(lessons: readonly Lesson[]): number | null {
   if (lessons.length === 0) return null;
   if (typeof window === 'undefined') return lessons[0].id;
   try {
     const raw = Number(localStorage.getItem(STORAGE_KEYS.lastLessonId));
-    if (lessons.some((l) => l.id === raw)) {
+    if (lessons.some((lesson) => lesson.id === raw)) {
       return raw;
     }
   } catch {
@@ -112,11 +137,45 @@ function readInitialLessonId(lessons: readonly Lesson[]): number | null {
   return lessons[0].id;
 }
 
+function readInitialLessonId(): number | null {
+  if (typeof window === 'undefined') return readStoredLessonId(DEFAULT_LESSONS);
+  const route = parseRoute(window.location.pathname);
+  if (route.lessonId !== null && DEFAULT_LESSONS.some((lesson) => lesson.id === route.lessonId)) {
+    return route.lessonId;
+  }
+  return readStoredLessonId(DEFAULT_LESSONS);
+}
+
+function readDeepLinkLessonId(): number | null {
+  if (typeof window === 'undefined') return null;
+  return parseRoute(window.location.pathname).lessonId;
+}
+
+function useIsDesktop(): boolean {
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window === 'undefined'
+      ? true
+      : window.matchMedia('(min-width: 1024px)').matches
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 1024px)');
+    const handleChange = (event: MediaQueryListEvent) => setIsDesktop(event.matches);
+    query.addEventListener('change', handleChange);
+    return () => query.removeEventListener('change', handleChange);
+  }, []);
+
+  return isDesktop;
+}
+
 export default function App() {
   const [lessons, setLessons] = useState<Lesson[]>(DEFAULT_LESSONS);
   const [user, setUser] = useState<User | null>(null);
   const [authRoute, setAuthRoute] = useState<AuthRoute>(readInitialRoute);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [updateReady, setUpdateReady] = useState(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
 
   const [theme, setTheme] = useState<ThemeMode>(readInitialTheme);
@@ -125,24 +184,35 @@ export default function App() {
   const [category, setCategory] = useState<CategoryFilter>('Tất cả');
   const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(() =>
-    readInitialLessonId(DEFAULT_LESSONS)
-  );
+  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(readInitialLessonId);
+  const [pendingDeepLinkId, setPendingDeepLinkId] = useState<number | null>(readDeepLinkLessonId);
   const [pageDirection, setPageDirection] = useState<1 | -1>(1);
-  const [mobilePane, setMobilePane] = useState<'list' | 'reader'>('list');
+  const [mobilePane, setMobilePane] = useState<'list' | 'reader'>(() =>
+    readDeepLinkLessonId() !== null ? 'reader' : 'list'
+  );
   const [readingProgress, setReadingProgress] = useState(0);
+  const [streak, setStreak] = useState(0);
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const isDesktop = useIsDesktop();
+
+  useEffect(() => {
+    const next = registerVisit(readStreak());
+    persistStreak(next);
+    setStreak(effectiveStreak(next));
+  }, []);
+
+  useEffect(() => {
+    const handleUpdate = () => setUpdateReady(true);
+    window.addEventListener('kinetix:updated', handleUpdate);
+    return () => window.removeEventListener('kinetix:updated', handleUpdate);
+  }, []);
 
   const navigateRoute = useCallback((nextRoute: AuthRoute) => {
     setAuthRoute(nextRoute);
     if (typeof window !== 'undefined') {
       const targetPath =
-        nextRoute === 'login'
-          ? '/login'
-          : nextRoute === 'register'
-            ? '/register'
-            : '/';
+        nextRoute === 'login' ? '/login' : nextRoute === 'register' ? '/register' : '/';
       if (window.location.pathname !== targetPath) {
         window.history.pushState(null, '', targetPath);
       }
@@ -150,10 +220,24 @@ export default function App() {
     }
   }, []);
 
-  // Sync browser back/forward navigation with authRoute
+  const pushLessonPath = useCallback((id: number) => {
+    if (typeof window === 'undefined') return;
+    const target = lessonPath(id);
+    if (window.location.pathname !== target) {
+      window.history.pushState(null, '', target);
+    }
+  }, []);
+
+  // Sync browser back/forward navigation with the in-app route
   useEffect(() => {
     const handlePopState = () => {
-      setAuthRoute(readInitialRoute());
+      const route = parseRoute(window.location.pathname);
+      setAuthRoute(route.authRoute);
+      if (route.lessonId !== null) {
+        setPendingDeepLinkId(route.lessonId);
+        setMobilePane('reader');
+      }
+      window.scrollTo({ top: 0, behavior: 'instant' });
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -181,7 +265,7 @@ export default function App() {
     };
   }, []);
 
-  // Load lessons from Supabase (fallback to 24 default lessons when table is empty)
+  // Load lessons from Supabase (fallback to bundled catalog when offline/empty)
   useEffect(() => {
     let active = true;
     fetchLessonsFromSupabase(DEFAULT_LESSONS).then((result) => {
@@ -192,6 +276,17 @@ export default function App() {
       active = false;
     };
   }, [user?.id]);
+
+  // Resolve a deep-linked lesson once the full catalog is available
+  useEffect(() => {
+    if (pendingDeepLinkId === null) return;
+    const match = lessons.find((lesson) => lesson.id === pendingDeepLinkId);
+    if (!match) return;
+    setPageDirection(1);
+    setSelectedLessonId(match.id);
+    setMobilePane('reader');
+    setPendingDeepLinkId(null);
+  }, [pendingDeepLinkId, lessons]);
 
   // Load mastered progress from Supabase when signed in, or localStorage in guest mode
   useEffect(() => {
@@ -219,22 +314,25 @@ export default function App() {
     };
   }, [user]);
 
-  // Sync theme to document root
+  // Sync theme to document root and browser chrome
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('dark', theme === 'dark');
     root.style.colorScheme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'dark' ? '#0c0d0f' : '#faf9f6');
   }, [theme]);
 
-  // Listen for OS color scheme changes when user hasn't explicitly saved a theme
+  // Listen for OS color scheme changes when the user hasn't explicitly saved a theme
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
     if (!mq) return;
-    const handleChange = (e: MediaQueryListEvent) => {
+    const handleChange = (event: MediaQueryListEvent) => {
       try {
         const stored = localStorage.getItem(STORAGE_KEYS.theme);
         if (!stored) {
-          setTheme(e.matches ? 'dark' : 'light');
+          setTheme(event.matches ? 'dark' : 'light');
         }
       } catch {
         // ignore
@@ -248,10 +346,7 @@ export default function App() {
   useEffect(() => {
     if (user) return;
     try {
-      localStorage.setItem(
-        STORAGE_KEYS.mastered,
-        JSON.stringify(Array.from(masteredIds))
-      );
+      localStorage.setItem(STORAGE_KEYS.mastered, JSON.stringify(Array.from(masteredIds)));
     } catch {
       // ignore
     }
@@ -307,10 +402,7 @@ export default function App() {
 
   const activeLesson = useMemo(() => {
     if (filteredLessons.length === 0) return null;
-    return (
-      filteredLessons.find((l) => l.id === selectedLessonId) ??
-      filteredLessons[0]
-    );
+    return filteredLessons.find((l) => l.id === selectedLessonId) ?? filteredLessons[0];
   }, [filteredLessons, selectedLessonId]);
 
   const { prev, next, currentIndex } = useMemo(
@@ -318,12 +410,18 @@ export default function App() {
     [filteredLessons, activeLesson?.id]
   );
 
+  // Returning to the reader pane should start from the top of the article
+  useEffect(() => {
+    if (mobilePane === 'reader' && !isDesktop) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [mobilePane, isDesktop]);
+
   // Track vertical reading scroll progress
   useEffect(() => {
     const updateScrollProgress = () => {
       const scrollTop = window.scrollY;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 20) {
         setReadingProgress(activeLesson ? 1 : 0);
         return;
@@ -340,6 +438,19 @@ export default function App() {
     };
   }, [activeLesson?.id, fontSizePx, authRoute]);
 
+  // Keep the document title in sync with the active lesson
+  useEffect(() => {
+    if (authRoute === 'login') {
+      document.title = 'Đăng nhập — KinetixNotes';
+    } else if (authRoute === 'register') {
+      document.title = 'Đăng ký — KinetixNotes';
+    } else if (activeLesson) {
+      document.title = `${activeLesson.title} — KinetixNotes`;
+    } else {
+      document.title = 'KinetixNotes — Tủ sách & Lưu trữ Tri thức';
+    }
+  }, [authRoute, activeLesson]);
+
   const handleToggleTheme = useCallback(() => {
     setTheme((prevTheme) => {
       const nextTheme: ThemeMode = prevTheme === 'dark' ? 'light' : 'dark';
@@ -354,14 +465,13 @@ export default function App() {
 
   const handleSelectLesson = useCallback(
     (id: number) => {
-      setPageDirection(
-        getLessonNavigationDirection(filteredLessons, selectedLessonId, id)
-      );
+      setPageDirection(getLessonNavigationDirection(filteredLessons, selectedLessonId, id));
       setSelectedLessonId(id);
       setMobilePane('reader');
+      pushLessonPath(id);
       window.scrollTo({ top: 0, behavior: 'instant' });
     },
-    [filteredLessons, selectedLessonId]
+    [filteredLessons, selectedLessonId, pushLessonPath]
   );
 
   const handleToggleMastered = useCallback(
@@ -380,11 +490,7 @@ export default function App() {
       });
 
       if (user) {
-        const { error } = await syncLessonProgressInSupabase(
-          user.id,
-          id,
-          nextIsMastered
-        );
+        const { error } = await syncLessonProgressInSupabase(user.id, id, nextIsMastered);
         if (error) {
           setSyncNotice(error);
         } else {
@@ -416,27 +522,27 @@ export default function App() {
         return { error: error ?? 'Không thể thêm bài học.' };
       }
 
-      setLessons((prevLessons) => {
-        const updated = mergeCatalogLessons(prevLessons, [lesson]);
-        const newlyAdded = updated[updated.length - 1];
-        if (newlyAdded) {
-          setSelectedLessonId(newlyAdded.id);
-        }
-        return updated;
-      });
+      const updated = mergeCatalogLessons(lessons, [lesson]);
+      const newlyAdded = updated[updated.length - 1];
+      setLessons(updated);
+      if (newlyAdded) {
+        setSelectedLessonId(newlyAdded.id);
+        pushLessonPath(newlyAdded.id);
+      }
       setCategory('Tất cả');
       setMasteryFilter('all');
       setSearchQuery('');
       setMobilePane('reader');
       return { error: null };
     },
-    [user]
+    [lessons, user, pushLessonPath]
   );
 
   const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
     setSyncNotice(null);
+    setMobilePane('list');
   }, []);
 
   const handleResetFilters = useCallback(() => {
@@ -446,41 +552,56 @@ export default function App() {
   }, []);
 
   const handlePickRandomLesson = useCallback(() => {
-    const pool = lessons.filter((l) => !masteredIds.has(l.id));
+    const pool = lessons.filter((lesson) => !masteredIds.has(lesson.id));
     const candidates = pool.length > 0 ? pool : lessons;
     if (candidates.length === 0) return;
 
-    const differentCandidates = candidates.filter((l) => l.id !== activeLesson?.id);
+    const differentCandidates = candidates.filter((lesson) => lesson.id !== activeLesson?.id);
     const finalPool = differentCandidates.length > 0 ? differentCandidates : candidates;
     const picked = finalPool[Math.floor(Math.random() * finalPool.length)];
 
     setCategory('Tất cả');
     setMasteryFilter('all');
     setSearchQuery('');
-    setPageDirection(
-      getLessonNavigationDirection(lessons, activeLesson?.id ?? null, picked.id)
-    );
+    setPageDirection(getLessonNavigationDirection(lessons, activeLesson?.id ?? null, picked.id));
     setSelectedLessonId(picked.id);
     setMobilePane('reader');
+    pushLessonPath(picked.id);
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [lessons, masteredIds, activeLesson?.id]);
+  }, [lessons, masteredIds, activeLesson?.id, pushLessonPath]);
 
-  // Keyboard shortcuts: "/" focuses search, ArrowLeft/ArrowRight moves between articles
+  const openPalette = useCallback(() => setIsPaletteOpen(true), []);
+
+  const focusSearch = useCallback(() => {
+    setIsPaletteOpen(false);
+    setIsShortcutsOpen(false);
+    setMobilePane('list');
+    window.setTimeout(() => searchInputRef.current?.focus(), 40);
+  }, []);
+
+  // Keyboard shortcuts
   useEffect(() => {
-    if (authRoute !== 'reader' || isAddModalOpen) return;
-
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       const isTyping =
         target?.tagName === 'INPUT' ||
         target?.tagName === 'TEXTAREA' ||
         target?.tagName === 'SELECT' ||
-        target?.isContentEditable;
+        Boolean(target?.isContentEditable);
+
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (isAddModalOpen) return;
+        setIsShortcutsOpen(false);
+        setIsPaletteOpen((open) => !open);
+        return;
+      }
+
+      if (authRoute !== 'reader') return;
 
       if (event.key === '/' && !isTyping) {
         event.preventDefault();
-        setMobilePane('list');
-        searchInputRef.current?.focus();
+        focusSearch();
         return;
       }
 
@@ -488,22 +609,41 @@ export default function App() {
         return;
       }
 
+      const anyDialogOpen = isPaletteOpen || isShortcutsOpen || isAddModalOpen;
+      if (anyDialogOpen) return;
+
       if (event.key === 'ArrowLeft' && prev) {
         event.preventDefault();
         handleSelectLesson(prev.id);
       } else if (event.key === 'ArrowRight' && next) {
         event.preventDefault();
         handleSelectLesson(next.id);
+      } else if (event.key === '?') {
+        event.preventDefault();
+        setIsShortcutsOpen(true);
+      } else if (event.key.toLowerCase() === 't') {
+        handleToggleTheme();
+      } else if (event.key.toLowerCase() === 'r') {
+        handlePickRandomLesson();
       }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [authRoute, isAddModalOpen, prev, next, handleSelectLesson]);
+  }, [
+    authRoute,
+    prev,
+    next,
+    handleSelectLesson,
+    isPaletteOpen,
+    isShortcutsOpen,
+    isAddModalOpen,
+    handleToggleTheme,
+    handlePickRandomLesson,
+    focusSearch,
+  ]);
 
-  const fontIndex = FONT_SIZES.indexOf(
-    fontSizePx as (typeof FONT_SIZES)[number]
-  );
+  const fontIndex = FONT_SIZES.indexOf(fontSizePx as (typeof FONT_SIZES)[number]);
   const canDecreaseFont = fontIndex > 0;
   const canIncreaseFont = fontIndex >= 0 && fontIndex < FONT_SIZES.length - 1;
 
@@ -517,31 +657,38 @@ export default function App() {
   const handleIncreaseFont = useCallback(() => {
     setFontSizePx((current) => {
       const idx = FONT_SIZES.indexOf(current as (typeof FONT_SIZES)[number]);
-      return idx >= 0 && idx < FONT_SIZES.length - 1
-        ? FONT_SIZES[idx + 1]
-        : current;
+      return idx >= 0 && idx < FONT_SIZES.length - 1 ? FONT_SIZES[idx + 1] : current;
     });
   }, []);
 
   const isAuthScreen = authRoute === 'login' || authRoute === 'register';
+  const headerProgress =
+    !isAuthScreen && (isDesktop || mobilePane === 'reader') ? readingProgress : 0;
 
   return (
     <MotionConfig reducedMotion="user">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-[var(--accent)] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--accent-contrast)]"
+      >
+        Bỏ qua tới nội dung chính
+      </a>
+
       <div
         id="top"
-        className="min-h-screen flex flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)]"
+        className="relative z-[1] flex min-h-[100dvh] flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)]"
       >
-        <header className="sticky top-0 z-30">
+        <header className="sticky top-0 z-40 pt-[var(--safe-top)]">
           <TopHeader
             theme={theme}
             onToggleTheme={handleToggleTheme}
             masteryFilter={masteryFilter}
-            onSelectMasteryFilter={(f) => {
-              setMasteryFilter(f);
+            onSelectMasteryFilter={(filter) => {
+              setMasteryFilter(filter);
               setMobilePane('list');
             }}
             onPickRandomLesson={handlePickRandomLesson}
-            readingProgress={readingProgress}
+            readingProgress={headerProgress}
             masteredCount={progressStats.masteredCount}
             totalCount={progressStats.totalCount}
             onLogoClick={() => {
@@ -553,6 +700,8 @@ export default function App() {
             onOpenAuth={() => navigateRoute('login')}
             onSignOut={handleSignOut}
             isAuthScreen={isAuthScreen}
+            onOpenPalette={openPalette}
+            streak={streak}
           />
 
           <AnimatePresence initial={false}>
@@ -563,7 +712,7 @@ export default function App() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="hidden lg:block overflow-hidden"
+                className="hidden overflow-hidden lg:block"
               >
                 <CategoryTabs
                   activeCategory={category}
@@ -589,12 +738,14 @@ export default function App() {
                 transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-1 flex-col"
               >
-                <AuthView
-                  mode={authRoute === 'register' ? 'register' : 'login'}
-                  onSwitchMode={(nextMode) => navigateRoute(nextMode)}
-                  onBackToReader={() => navigateRoute('reader')}
-                  onAuthSuccess={() => navigateRoute('reader')}
-                />
+                <Suspense fallback={<div className="min-h-[60vh]" />}>
+                  <AuthView
+                    mode={authRoute === 'register' ? 'register' : 'login'}
+                    onSwitchMode={(nextMode) => navigateRoute(nextMode)}
+                    onBackToReader={() => navigateRoute('reader')}
+                    onAuthSuccess={() => navigateRoute('reader')}
+                  />
+                </Suspense>
               </motion.div>
             ) : (
               <motion.div
@@ -603,118 +754,218 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                className="flex flex-1 flex-col"
+                className="flex flex-1 flex-col max-lg:pb-[calc(var(--tabbar-h)_+_var(--safe-bottom))]"
               >
-              <div className="lg:hidden">
-                <CategoryTabs
-                  activeCategory={category}
-                  onSelectCategory={(cat) => {
-                    setCategory(cat);
-                    setMobilePane('list');
-                  }}
-                  counts={categoryCounts}
-                />
-              </div>
-
-              <AnimatePresence>
-                {syncNotice && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    role="status"
-                    className="overflow-hidden border-b border-[var(--border-hairline)] bg-[var(--bg-subtle)]"
-                  >
-                    <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-2 text-xs text-[var(--text-secondary)]">
-                      <span>{syncNotice}</span>
-                      <button
-                        type="button"
-                        onClick={() => setSyncNotice(null)}
-                        className="font-medium text-[var(--accent)] hover:underline shrink-0"
-                      >
-                        Đóng
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <main className="mx-auto w-full max-w-[1380px] flex-1 grid grid-cols-1 lg:grid-cols-[360px_minmax(0,1fr)]">
-                <div
-                  className={
-                    mobilePane === 'list'
-                      ? 'block max-lg:mobile-pane-enter'
-                      : 'hidden lg:block'
-                  }
-                >
-                  <LibrarySidebar
-                    lessons={filteredLessons}
-                    selectedLessonId={activeLesson?.id ?? null}
-                    onSelectLesson={handleSelectLesson}
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    searchInputRef={searchInputRef}
-                    masteredIds={masteredIds}
-                    progress={progressStats}
-                    masteryFilter={masteryFilter}
-                    onSelectMasteryFilter={setMasteryFilter}
-                    onResetFilters={handleResetFilters}
-                    canAddLesson={isLessonAdmin}
-                    onOpenAddLesson={() => {
-                      if (isLessonAdmin) {
-                        setIsAddModalOpen(true);
-                      }
+                <div className="sticky top-[calc(var(--header-h)_+_var(--safe-top))] z-30 lg:hidden">
+                  <CategoryTabs
+                    activeCategory={category}
+                    onSelectCategory={(cat) => {
+                      setCategory(cat);
+                      setMobilePane('list');
                     }}
+                    counts={categoryCounts}
                   />
                 </div>
 
-                <div
-                  className={
-                    mobilePane === 'reader'
-                      ? 'block max-lg:mobile-pane-enter'
-                      : 'hidden lg:block'
-                  }
+                <AnimatePresence>
+                  {syncNotice && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      role="status"
+                      className="overflow-hidden border-b border-[var(--border-hairline)] bg-[var(--bg-subtle)]"
+                    >
+                      <div className="mx-auto flex max-w-[var(--shell-max)] items-center justify-between gap-4 px-4 py-2 text-xs text-[var(--text-secondary)] sm:px-6 lg:px-8">
+                        <span>{syncNotice}</span>
+                        <button
+                          type="button"
+                          onClick={() => setSyncNotice(null)}
+                          className="shrink-0 font-medium text-[var(--accent)] hover:underline"
+                        >
+                          Đóng
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <main
+                  id="main"
+                  className="mx-auto grid w-full max-w-[var(--shell-max)] flex-1 grid-cols-1 lg:grid-cols-[352px_minmax(0,1fr)]"
                 >
-                  <LessonReader
-                    lesson={activeLesson}
-                    pageDirection={pageDirection}
-                    totalVisible={filteredLessons.length}
-                    currentIndex={currentIndex}
-                    prevLesson={prev}
-                    nextLesson={next}
-                    onSelectLesson={handleSelectLesson}
-                    isMastered={
-                      activeLesson ? masteredIds.has(activeLesson.id) : false
+                  <div
+                    className={
+                      mobilePane === 'list' ? 'block mobile-pane-enter' : 'hidden lg:block'
                     }
-                    onToggleMastered={handleToggleMastered}
-                    fontSizePx={fontSizePx}
-                    onIncreaseFont={handleIncreaseFont}
-                    onDecreaseFont={handleDecreaseFont}
-                    canIncreaseFont={canIncreaseFont}
-                    canDecreaseFont={canDecreaseFont}
-                    onBackToListMobile={() => setMobilePane('list')}
-                    onResetFilters={handleResetFilters}
-                  />
-                </div>
-              </main>
+                  >
+                    <LibrarySidebar
+                      lessons={filteredLessons}
+                      selectedLessonId={activeLesson?.id ?? null}
+                      onSelectLesson={handleSelectLesson}
+                      searchQuery={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      searchInputRef={searchInputRef}
+                      masteredIds={masteredIds}
+                      progress={progressStats}
+                      masteryFilter={masteryFilter}
+                      onSelectMasteryFilter={setMasteryFilter}
+                      activeCategory={category}
+                      onResetFilters={handleResetFilters}
+                      canAddLesson={isLessonAdmin}
+                      onOpenAddLesson={() => {
+                        if (isLessonAdmin) {
+                          setIsAddModalOpen(true);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    className={
+                      mobilePane === 'reader' ? 'block mobile-pane-enter' : 'hidden lg:block'
+                    }
+                  >
+                    <LessonReader
+                      lesson={activeLesson}
+                      pageDirection={pageDirection}
+                      totalVisible={filteredLessons.length}
+                      currentIndex={currentIndex}
+                      prevLesson={prev}
+                      nextLesson={next}
+                      onSelectLesson={handleSelectLesson}
+                      isMastered={activeLesson ? masteredIds.has(activeLesson.id) : false}
+                      onToggleMastered={handleToggleMastered}
+                      fontSizePx={fontSizePx}
+                      onIncreaseFont={handleIncreaseFont}
+                      onDecreaseFont={handleDecreaseFont}
+                      canIncreaseFont={canIncreaseFont}
+                      canDecreaseFont={canDecreaseFont}
+                      onBackToListMobile={() => setMobilePane('list')}
+                      onResetFilters={handleResetFilters}
+                      readingProgress={readingProgress}
+                    />
+                  </div>
+                </main>
+
+                <MobileTabBar
+                  pane={mobilePane}
+                  onSelectList={() => setMobilePane('list')}
+                  onSelectReader={() => setMobilePane('reader')}
+                  onOpenPalette={openPalette}
+                  onPickRandom={handlePickRandomLesson}
+                  theme={theme}
+                  onToggleTheme={handleToggleTheme}
+                />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        <AddLessonModal
-          isOpen={isAddModalOpen && isLessonAdmin}
-          onClose={() => setIsAddModalOpen(false)}
-          onSubmitLesson={handleCreateLesson}
-        />
+        <AnimatePresence>
+          {updateReady && (
+            <motion.div
+              role="status"
+              aria-live="polite"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              className="fixed inset-x-3 bottom-[calc(var(--tabbar-h)_+_var(--safe-bottom)_+_12px)] z-[60] mx-auto flex max-w-sm items-center gap-3 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-card)] px-3.5 py-3 shadow-[var(--shadow-pop)] lg:inset-x-auto lg:right-6 lg:bottom-6"
+            >
+              <p className="min-w-0 flex-1 text-xs text-[var(--text-secondary)]">
+                Đã có bản cập nhật mới của KinetixNotes.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="btn btn-primary min-h-[34px] px-3 text-[12px]"
+              >
+                Tải lại
+              </button>
+              <button
+                type="button"
+                onClick={() => setUpdateReady(false)}
+                aria-label="Ẩn thông báo cập nhật"
+                className="icon-btn h-8 w-8 text-base leading-none"
+              >
+                ×
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <footer className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-4 sm:px-6 lg:px-8 py-4">
-          <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-            <span className="font-serif">KinetixNotes</span>
-            <span>Lưu trữ tri thức &amp; Ôn tập chủ động</span>
+        <footer className="border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-4 py-4 sm:px-6 lg:px-8 max-lg:pb-[calc(var(--tabbar-h)_+_var(--safe-bottom))]">
+          <div className="mx-auto flex max-w-[var(--shell-max)] flex-wrap items-center justify-between gap-3 text-[11px] text-[var(--text-muted)]">
+            <span className="inline-flex items-center gap-2">
+              <span className="font-serif text-[13px] font-semibold text-[var(--text-secondary)]">
+                KinetixNotes
+              </span>
+              <span aria-hidden="true">·</span>
+              <span>Lưu trữ tri thức &amp; Ôn tập chủ động</span>
+            </span>
+            <span className="inline-flex items-center gap-3">
+              {!isSupabaseConfigured && (
+                <span className="inline-flex items-center gap-1.5 text-[var(--warning)]">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
+                  Chế độ cục bộ
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsShortcutsOpen(true)}
+                className="rounded font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--accent)]"
+              >
+                Phím tắt (?)
+              </button>
+            </span>
           </div>
         </footer>
+
+        <Suspense fallback={null}>
+          <CommandPalette
+            isOpen={isPaletteOpen}
+            onClose={() => setIsPaletteOpen(false)}
+            lessons={lessons}
+            onSelectLesson={(id) => {
+              handleSelectLesson(id);
+              setIsPaletteOpen(false);
+            }}
+            onPickRandom={handlePickRandomLesson}
+            onResetFilters={() => {
+              handleResetFilters();
+              setMobilePane('list');
+            }}
+            onToggleTheme={handleToggleTheme}
+            theme={theme}
+            userEmail={user?.email ?? null}
+            onOpenAuth={() => {
+              setIsPaletteOpen(false);
+              navigateRoute('login');
+            }}
+            onSignOut={handleSignOut}
+            canAddLesson={isLessonAdmin}
+            onOpenAddLesson={() => {
+              setIsPaletteOpen(false);
+              if (isLessonAdmin) setIsAddModalOpen(true);
+            }}
+            onOpenShortcuts={() => {
+              setIsPaletteOpen(false);
+              setIsShortcutsOpen(true);
+            }}
+          />
+
+          <ShortcutsDialog
+            isOpen={isShortcutsOpen}
+            onClose={() => setIsShortcutsOpen(false)}
+          />
+
+          <AddLessonModal
+            isOpen={isAddModalOpen && isLessonAdmin}
+            onClose={() => setIsAddModalOpen(false)}
+            onSubmitLesson={handleCreateLesson}
+          />
+        </Suspense>
       </div>
     </MotionConfig>
   );

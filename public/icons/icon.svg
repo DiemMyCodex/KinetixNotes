@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#191b21"/>
+      <stop offset="0.55" stop-color="#101114"/>
+      <stop offset="1" stop-color="#08090b"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="0.18" cy="0.12" r="0.7">
+      <stop offset="0" stop-color="#3b6bff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#3b6bff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="0.9" cy="1" r="0.65">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="k" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d9dcff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="225.28" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="225.28" fill="url(#g1)"/>
+  <rect width="1024" height="1024" rx="225.28" fill="url(#g2)"/>
+  <path d="M470.47 701.03L418.82 701.03Q419.88 673.87 420.15 646.72Q420.41 619.56 420.41 591.61Q420.41 563.65 420.41 535.96L420.41 535.96L420.41 509.87Q420.41 482.18 420.41 454.49Q420.41 426.8 420.15 399.11Q419.88 371.43 418.82 344.27L418.82 344.27L470.47 344.27Q469.93 370.89 469.4 398.58Q468.87 426.27 468.87 453.96Q468.87 481.65 468.87 509.87L468.87 509.87L468.87 549.27Q468.87 570.04 468.87 594.8Q468.87 619.56 469.4 646.45Q469.93 673.34 470.47 701.03L470.47 701.03M520.52 701.03L370.36 701.03L370.36 679.2L440.12 671.21L451.3 671.21L520.52 679.2L520.52 701.03M440.12 374.09L370.36 366.1L370.36 344.27L520.52 344.27L520.52 366.1L451.3 374.09L440.12 374.09M699.43 701.03L562.59 701.03L562.59 679.2L627.02 671.21L635 671.21L699.43 679.2L699.43 701.03M621.69 376.22L568.98 366.1L568.98 344.27L691.45 344.27L691.45 366.1L632.34 374.09L621.69 376.22M663.76 344.27L444.91 607.85L442.78 572.7L444.91 572.7L459.28 555.13L631.28 344.27L663.76 344.27M673.34 701.03L620.63 701.03L515.19 503.48L544.48 468.87L673.34 701.03" fill="url(#k)"/>
+  <rect x="346.9312" y="740.9664" width="330.1376" height="12.288" rx="6.144" fill="#3b6bff" opacity="0.9"/>
+</svg>

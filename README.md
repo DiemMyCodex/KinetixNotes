@@ -21,6 +21,14 @@ Nền tảng học tập vi mô (Micro-learning) hiệu năng cao, cung cấp c�
   - Người dùng thông thường chỉ có toàn quyền với dữ liệu tiến độ cá nhân của chính mình (`auth.uid() = user_id`).
 - **Khả năng chịu lỗi cao (Offline/Resilient Fallback)**:
   - Nếu mất kết nối mạng hoặc Supabase tạm thời gián đoạn, ứng dụng tự động kích hoạt bộ dữ liệu nền tảng tích hợp sẵn (bundled catalog fallback), bảo đảm trải nghiệm không bao giờ bị gián đoạn.
+  - Service worker (chỉ bật ở bản production) precache vỏ ứng dụng, ưu tiên mạng cho điều hướng và cache-first cho asset đã băm — mở lại app khi ngoại tuyến vẫn đọc được.
+- **Điều hướng nhanh & deep link**:
+  - Command palette (`⌘K` / `Ctrl K`) tìm bài học hoặc chạy lệnh; phím tắt `?` mở bảng trợ giúp.
+  - Mỗi bài có URL riêng (`/bai/:id`) để chia sẻ; nút chia sẻ dùng Web Share API hoặc sao chép liên kết.
+  - Chuỗi ngày đọc (streak) lưu cục bộ; vuốt ngang trên thiết bị cảm ứng để chuyển bài.
+- **PWA & mobile-first**:
+  - Cài được lên màn hình chính (manifest, maskable icon, theme-color theo sáng/tối).
+  - Thanh điều hướng đáy, safe-area inset và vùng chạm tối thiểu 38–40px cho điện thoại.
 
 ---
 
@@ -29,6 +37,8 @@ Nền tảng học tập vi mô (Micro-learning) hiệu năng cao, cung cấp c�
 - **Giao diện & Ứng dụng**: React 19, TypeScript, Vite 8, Tailwind CSS v4, Lucide Icons, Framer Motion (`motion`).
 - **Backend & Cơ sở dữ liệu**: Supabase (PostgreSQL 15+, Supabase Auth, Row-Level Security, PostgREST API).
 - **Hạ tầng triển khai**: Vercel Edge Network (cấu hình SPA Routing qua `vercel.json`).
+- **PWA**: Web App Manifest + service worker tự viết (`public/sw.js`), không phụ thuộc plugin.
+- **Kiểm thử**: `npm test` (Node test runner cho CLI thêm bài) + `npm run lint` (TypeScript).
 
 ---
 
@@ -36,35 +46,59 @@ Nền tảng học tập vi mô (Micro-learning) hiệu năng cao, cung cấp c�
 
 ```text
 KinetixNotes/
-├── index.html                   # HTML entry point với cấu hình viewport chuẩn mobile & desktop
+├── index.html                   # HTML entry point: meta, manifest, theme-color, OG
 ├── package.json                 # Danh sách thư viện phụ thuộc & lệnh thực thi
 ├── tsconfig.json                # Cấu hình kiểm tra kiểu tĩnh TypeScript
-├── vercel.json                  # Cấu hình routing SPA & build command cho Vercel
-├── vite.config.ts               # Cấu hình bundler Vite & Tailwind v4
-├── DEPLOYMENT.md                # Tài liệu quy trình triển khai & vận hành chi tiết (Runbook)
+├── vercel.json                  # SPA rewrites + cache/security headers
+├── vite.config.ts               # Bundler Vite, Tailwind v4, vendor chunks
+├── DEPLOYMENT.md                # Runbook triển khai & vận hành
+├── public/
+│   ├── manifest.webmanifest     # Metadata cài đặt PWA
+│   ├── sw.js                    # Service worker: precache shell, offline fallback
+│   ├── og.png                   # Ảnh chia sẻ mạng xã hội 1200×630
+│   └── icons/                   # Icon 192/512, maskable, apple-touch, SVG
 ├── supabase/
-│   └── schema.sql               # Định nghĩa bảng lessons, user_progress & chính sách RLS
+│   └── schema.sql               # Bảng lessons, user_progress & chính sách RLS
 └── src/
-    ├── App.tsx                  # Điều phối luồng màn hình, quản trị trạng thái & định tuyến
-    ├── main.tsx                 # Điểm khởi chạy React DOM
-    ├── index.css                # Style toàn cục & cấu hình theme
+    ├── App.tsx                  # State, route, phím tắt, streak, lazy views
+    ├── main.tsx                 # React DOM entry + đăng ký service worker
+    ├── index.css                # Design tokens, primitive classes & motion
     ├── components/
-    │   ├── AddLessonModal.tsx   # Modal tạo bài học mới (dành riêng cho Admin)
-    │   ├── AuthView.tsx         # Màn hình đăng nhập & đăng ký người dùng
-    │   ├── CategoryTabs.tsx     # Bộ lọc theo 4 phân loại bài học
-    │   ├── LessonReader.tsx     # Trình đọc bài học chi tiết, quiz tương tác & nút đánh dấu
-    │   ├── LibrarySidebar.tsx   # Danh sách danh mục bài học & tiến độ hoàn thành
-    │   └── TopHeader.tsx        # Thanh điều hướng trên cùng, huy hiệu user & nút quản trị
+    │   ├── AddLessonModal.tsx   # Modal tạo bài học mới (Admin)
+    │   ├── AuthView.tsx         # Đăng nhập / đăng ký (split layout)
+    │   ├── CategoryTabs.tsx     # Lọc 4 chuyên mục, icon + màu riêng
+    │   ├── CommandPalette.tsx   # Tìm bài + chạy lệnh (⌘K)
+    │   ├── LessonReader.tsx     # Trình đọc, quiz, chia sẻ, vuốt chuyển bài
+    │   ├── LibrarySidebar.tsx   # Danh sách, tìm kiếm, vòng tiến độ
+    │   ├── MobileTabBar.tsx     # Điều hướng đáy trên di động
+    │   ├── ShortcutsDialog.tsx  # Bảng phím tắt (?)
+    │   └── TopHeader.tsx        # Header, scope filter, streak, theme, auth
     ├── data/
-    │   └── defaultLessons.ts    # Kho bài học nền tảng mặc định (offline fallback)
+    │   └── lessons.json         # Kho bài học mặc định (offline fallback)
     ├── lib/
-    │   └── supabase.ts          # Khởi tạo Supabase client với biến môi trường
+    │   ├── categoryMeta.ts      # Icon & màu theo chuyên mục
+    │   ├── router.ts            # Parse `/bai/:id`, `/login`, `/register`
+    │   ├── streak.ts            # Chuỗi ngày đọc lưu localStorage
+    │   ├── supabase.ts          # Supabase client từ biến môi trường
+    │   └── useDialogA11y.ts     # Focus trap, Esc, scroll lock, focus restore
     ├── services/
-    │   ├── supabaseHelpers.ts   # Hàm chuẩn hóa dữ liệu, kiểm tra quyền admin diemmycodex@gmail.com
-    │   └── supabaseSync.ts      # Hàm tương tác PostgREST: fetch/insert lessons & user progress
+    │   ├── supabaseHelpers.ts   # Chuẩn hóa dữ liệu, kiểm tra quyền admin
+    │   └── supabaseSync.ts      # PostgREST: lessons & user progress
     └── types/
-        └── lesson.ts            # Định nghĩa Interface & Types (Lesson, Category, User)
+        └── lesson.ts            # Interface & Types (Lesson, Category, User)
 ```
+
+### Phím tắt
+
+| Phím | Hành động |
+| :--- | :--- |
+| `⌘K` / `Ctrl K` | Mở command palette (tìm bài + lệnh) |
+| `/` | Focus ô tìm kiếm trong tủ sách |
+| `←` / `→` | Bài trước / bài tiếp theo |
+| `T` | Đổi giao diện sáng / tối |
+| `R` | Ôn bài ngẫu nhiên |
+| `?` | Mở bảng phím tắt |
+| `Esc` | Đóng hộp thoại |
 
 ---
 

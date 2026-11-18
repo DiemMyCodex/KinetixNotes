@@ -1,7 +1,8 @@
-import { Check, Plus, Search, X } from 'lucide-react';
+import { Check, Plus, Search, SlidersHorizontal, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import type { RefObject } from 'react';
-import type { Lesson, MasteryFilter } from '../types/lesson';
+import { useEffect, useRef, type RefObject } from 'react';
+import { categoryTone } from '../lib/categoryMeta';
+import type { CategoryFilter, Lesson, MasteryFilter } from '../types/lesson';
 import type { ProgressStats } from '../utils/lessons';
 
 interface LibrarySidebarProps {
@@ -15,6 +16,7 @@ interface LibrarySidebarProps {
   progress: ProgressStats;
   masteryFilter: MasteryFilter;
   onSelectMasteryFilter: (filter: MasteryFilter) => void;
+  activeCategory: CategoryFilter;
   onResetFilters: () => void;
   canAddLesson: boolean;
   onOpenAddLesson: () => void;
@@ -31,20 +33,66 @@ export function LibrarySidebar({
   progress,
   masteryFilter,
   onSelectMasteryFilter,
+  activeCategory,
   onResetFilters,
   canAddLesson,
   onOpenAddLesson,
 }: LibrarySidebarProps) {
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const hasFilters =
+    activeCategory !== 'Tất cả' || masteryFilter !== 'all' || searchQuery.trim().length > 0;
+  const remaining = Math.max(0, progress.totalCount - progress.masteredCount);
+
+  useEffect(() => {
+    if (selectedLessonId === null) return;
+    const container = listRef.current;
+    if (!container || container.scrollHeight <= container.clientHeight + 4) return;
+    const row = container.querySelector<HTMLElement>(
+      `[data-lesson-row="${selectedLessonId}"]`
+    );
+    row?.scrollIntoView({ block: 'nearest' });
+  }, [selectedLessonId]);
+
+  const filters: { id: MasteryFilter; label: string; count: number }[] = [
+    { id: 'all', label: 'Tất cả', count: progress.totalCount },
+    { id: 'unmastered', label: 'Chưa thuộc', count: remaining },
+    { id: 'mastered', label: 'Đã thuộc', count: progress.masteredCount },
+  ];
+
   return (
     <aside
       aria-label="Mục lục tủ sách"
-      className="flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--border-hairline)] bg-[var(--bg-subtle)]/55 lg:h-[calc(100vh-108px)] lg:sticky lg:top-[108px]"
+      className="flex flex-col border-[var(--border-hairline)] bg-[var(--bg-sidebar)] max-lg:border-b lg:sticky lg:top-[var(--shell-offset)] lg:h-[calc(100dvh_-_var(--shell-offset))] lg:border-r"
     >
-      {/* Search + Progress Header */}
-      <div className="border-b border-[var(--border-hairline)] p-4 space-y-3.5">
+      <div className="space-y-3 border-b border-[var(--border-hairline)] p-4">
+        <div className="surface flex items-center gap-3.5 p-3">
+          <div
+            role="img"
+            aria-label={`Đã thuộc ${progress.percentage}% số bài`}
+            className="relative grid h-[52px] w-[52px] shrink-0 place-items-center rounded-full"
+            style={{
+              background: `conic-gradient(var(--accent) ${progress.percentage}%, var(--border-hairline) 0)`,
+            }}
+          >
+            <span className="absolute inset-[3px] grid place-items-center rounded-full bg-[var(--bg-card)] font-mono text-[11.5px] font-semibold tabular-nums text-[var(--text-primary)]">
+              {progress.percentage}%
+            </span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="kicker">Tiến độ ghi nhớ</span>
+            <p className="mt-0.5 text-[13px] font-semibold text-[var(--text-primary)]">
+              <span className="font-mono tabular-nums">{progress.masteredCount}</span>
+              <span className="text-[var(--text-muted)]"> / {progress.totalCount} bài</span>
+            </p>
+            <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+              {remaining === 0 ? 'Đã hoàn thành toàn bộ tủ sách' : `Còn ${remaining} bài chưa thuộc`}
+            </p>
+          </div>
+        </div>
+
         <div className="relative">
           <label htmlFor="lesson-search" className="sr-only">
-            Tìm kiếm bài học theo tiêu đề hoặc từ khóa
+            Tìm kiếm bài học theo tiêu đề, thuật ngữ hoặc nội dung
           </label>
           <Search
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
@@ -55,13 +103,14 @@ export function LibrarySidebar({
             id="lesson-search"
             type="search"
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Tìm khái niệm, tiêu đề..."
-            className="w-full min-h-[40px] rounded-md border border-[var(--border-hairline)] bg-[var(--bg-card)] py-2 pl-9 pr-9 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-all focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/12 focus:outline-none"
+            className="field min-h-[40px] py-2 pl-9 pr-10 text-[13px]"
           />
-          <AnimatePresence>
-            {searchQuery && (
+          <AnimatePresence mode="wait" initial={false}>
+            {searchQuery ? (
               <motion.button
+                key="clear"
                 type="button"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -69,33 +118,35 @@ export function LibrarySidebar({
                 transition={{ duration: 0.14 }}
                 onClick={() => onSearchChange('')}
                 aria-label="Xóa từ khóa tìm kiếm"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                className="absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
               </motion.button>
+            ) : (
+              <kbd
+                key="hint"
+                aria-hidden="true"
+                className="kbd pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2"
+              >
+                /
+              </kbd>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Mobile-only mastery filter row */}
-        <div className="flex md:hidden items-center gap-1 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-card)] p-1">
-          {(
-            [
-              { id: 'all', label: 'Tất cả' },
-              { id: 'unmastered', label: 'Chưa thuộc' },
-              { id: 'mastered', label: 'Đã thuộc' },
-            ] as const
-          ).map((item) => {
+        <div className="flex items-center gap-1 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-card)] p-1 md:hidden">
+          {filters.map((item) => {
             const active = masteryFilter === item.id;
             return (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => onSelectMasteryFilter(item.id)}
-                className={`relative flex-1 min-h-[34px] rounded px-2 py-1 text-xs font-medium whitespace-nowrap transition-colors ${
+                aria-pressed={active}
+                className={`relative flex min-h-[34px] flex-1 items-center justify-center gap-1 rounded px-2 text-[11.5px] font-medium whitespace-nowrap transition-colors ${
                   active
-                    ? 'text-[var(--text-primary)] font-semibold'
-                    : 'text-[var(--text-secondary)]'
+                    ? 'text-[var(--text-primary)]'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {active && (
@@ -103,75 +154,57 @@ export function LibrarySidebar({
                     layoutId="mobileMasteryPill"
                     transition={{ type: 'spring', stiffness: 460, damping: 36 }}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded bg-[var(--bg-subtle)]"
+                    className="absolute inset-0 rounded bg-[var(--bg-subtle)] ring-1 ring-inset ring-[var(--border-hairline)]"
                   />
                 )}
                 <span className="relative z-10">{item.label}</span>
+                <span className="relative z-10 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
+                  {item.count}
+                </span>
               </button>
             );
           })}
         </div>
 
-        {/* Mastery Progress Bar */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-[var(--text-secondary)]">
-              Tiến độ ghi nhớ
-            </span>
-            <span className="font-mono tabular-nums text-[var(--text-primary)] font-medium">
-              {progress.masteredCount} / {progress.totalCount} bài ({progress.percentage}%)
-            </span>
-          </div>
-          <div
-            role="progressbar"
-            aria-label="Tiến độ các bài đã thuộc"
-            aria-valuenow={progress.masteredCount}
-            aria-valuemin={0}
-            aria-valuemax={progress.totalCount}
-            className="h-1.5 w-full overflow-hidden rounded-sm bg-[var(--border-hairline)]"
-          >
-            <motion.div
-              className="h-full bg-[var(--accent)]"
-              initial={false}
-              animate={{ width: `${progress.percentage}%` }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-        </div>
-
         {canAddLesson && (
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={onOpenAddLesson}
-            className="inline-flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
-          >
+          <button type="button" onClick={onOpenAddLesson} className="btn btn-secondary w-full">
             <Plus className="h-3.5 w-3.5 text-[var(--accent)]" aria-hidden="true" />
             <span>Thêm bài mới</span>
-          </motion.button>
+          </button>
         )}
       </div>
 
-      {/* Scrollable Lesson Index */}
-      <div className="editorial-scroll flex-1 overflow-y-auto divide-y divide-[var(--border-hairline)]">
+      <div className="flex items-center justify-between gap-2 border-b border-[var(--border-hairline)] px-4 py-2 text-[11px] text-[var(--text-muted)]">
+        <span className="inline-flex items-center gap-1.5">
+          <SlidersHorizontal className="h-3 w-3" aria-hidden="true" />
+          <span className="font-mono tabular-nums">{lessons.length}</span> bài hiển thị
+        </span>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="rounded px-1.5 py-0.5 font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent-soft)]"
+          >
+            Xóa lọc
+          </button>
+        )}
+      </div>
+
+      <div ref={listRef} className="scroll-thin flex-1 overflow-y-auto py-1">
         {lessons.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="p-8 text-center space-y-3"
+            className="space-y-3 p-8 text-center"
           >
             <p className="font-serif text-base text-[var(--text-primary)]">
               Không tìm thấy bài học phù hợp
             </p>
             <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-              Thử đổi từ khóa khác hoặc đặt lại bộ lọc danh mục để xem toàn bộ kho tri thức.
+              Thử từ khóa khác hoặc đặt lại bộ lọc để xem toàn bộ kho tri thức.
             </p>
-            <button
-              type="button"
-              onClick={onResetFilters}
-              className="inline-flex min-h-[38px] items-center justify-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-card)] px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors"
-            >
+            <button type="button" onClick={onResetFilters} className="btn btn-secondary">
               Xem tất cả bài học
             </button>
           </motion.div>
@@ -185,10 +218,11 @@ export function LibrarySidebar({
               <button
                 key={lesson.id}
                 type="button"
+                data-lesson-row={lesson.id}
                 onClick={() => onSelectLesson(lesson.id)}
                 aria-current={isSelected ? 'true' : undefined}
-                className={`group relative w-full text-left px-4 py-4 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[var(--accent)] ${
-                  isSelected ? '' : 'hover:bg-[var(--bg-card)]/60'
+                className={`group relative block w-full px-4 py-2.5 text-left transition-colors duration-150 focus-visible:outline-2 focus-visible:[outline-offset:-2px] focus-visible:outline-[var(--accent)] ${
+                  isSelected ? '' : 'hover:bg-[var(--bg-card)]/55'
                 }`}
               >
                 {isSelected && (
@@ -196,43 +230,45 @@ export function LibrarySidebar({
                     layoutId="sidebarActiveHighlight"
                     transition={{ type: 'spring', stiffness: 420, damping: 36 }}
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-[var(--bg-card)] shadow-[inset_2px_0_0_0_var(--accent),inset_0_0_0_1px_var(--border-hairline)]"
+                    className="pointer-events-none absolute inset-0 bg-[var(--bg-card)] shadow-[inset_2px_0_0_0_var(--accent),inset_0_1px_0_0_var(--border-hairline),inset_0_-1px_0_0_var(--border-hairline)]"
                   />
                 )}
 
-                <div className="relative z-10 flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    {/* Clean unboxed metadata kicker */}
-                    <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                      <span
-                        className={`font-mono tabular-nums transition-colors ${
-                          isSelected ? 'text-[var(--accent)] font-semibold' : ''
-                        }`}
-                      >
-                        {formattedNum}
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span className="truncate">{lesson.category}</span>
-                      {isSelected && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <span className="font-medium text-[var(--accent)]">
-                            Đang đọc
-                          </span>
-                        </>
-                      )}
-                    </div>
+                <div className="relative z-10 flex items-start gap-2.5">
+                  <span
+                    aria-hidden="true"
+                    className={`mt-[3px] w-[18px] shrink-0 font-mono text-[10.5px] tabular-nums transition-colors ${
+                      isSelected ? 'font-semibold text-[var(--accent)]' : 'text-[var(--text-muted)]'
+                    }`}
+                  >
+                    {formattedNum}
+                  </span>
 
-                    <h2
-                      className={`font-serif text-[15px] leading-snug transition-colors ${
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className={`${categoryTone(lesson.category)} h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cat)]`}
+                      />
+                      <span className="truncate text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--text-muted)]">
+                        {lesson.category}
+                      </span>
+                      {isSelected && (
+                        <span className="shrink-0 rounded bg-[var(--accent-soft)] px-1.5 py-px text-[9.5px] font-semibold uppercase tracking-wide text-[var(--accent)]">
+                          Đang đọc
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      className={`mt-0.5 block font-serif text-[14.5px] leading-snug transition-colors ${
                         isSelected
                           ? 'font-semibold text-[var(--text-primary)]'
                           : 'font-medium text-[var(--text-primary)]/85 group-hover:text-[var(--text-primary)]'
                       }`}
                     >
                       {lesson.title}
-                    </h2>
-                  </div>
+                    </span>
+                  </span>
 
                   <AnimatePresence>
                     {isMastered && (
@@ -242,9 +278,9 @@ export function LibrarySidebar({
                         exit={{ scale: 0.5, opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 460, damping: 28 }}
                         title="Đã thuộc"
-                        className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--mastered-soft)] text-[var(--mastered)]"
+                        className="mt-1 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-[var(--mastered-soft)] text-[var(--mastered)]"
                       >
-                        <Check className="h-3 w-3 stroke-[2.5]" aria-hidden="true" />
+                        <Check className="h-2.5 w-2.5 stroke-[3]" aria-hidden="true" />
                         <span className="sr-only">Đã thuộc</span>
                       </motion.span>
                     )}
