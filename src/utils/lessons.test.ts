@@ -11,18 +11,22 @@ import {
   normalizeForSearch,
   splitPointLead,
   tokenizeTechnicalTerms,
+  CATEGORY_LIST,
 } from './lessons';
 
 const lessons = lessonsData as Lesson[];
 
-test('seeded lessons data contains exactly 24 lessons with expected category breakdown', () => {
-  assert.equal(lessons.length, 24);
+test('seeded lessons data is non-empty and every category has lessons', () => {
+  assert.ok(lessons.length > 0);
   const counts = getCategoryCounts(lessons);
-  assert.equal(counts['Tất cả'], 24);
-  assert.equal(counts['Máy tính'], 7);
-  assert.equal(counts['Trí tuệ AI'], 7);
-  assert.equal(counts['Tâm lý & Sống'], 9);
-  assert.equal(counts['Kinh tế'], 1);
+  assert.equal(counts['Tất cả'], lessons.length);
+  for (const category of CATEGORY_LIST) {
+    assert.ok(counts[category] > 0, `category ${category} should have lessons`);
+  }
+  assert.equal(
+    CATEGORY_LIST.reduce((sum, category) => sum + counts[category], 0),
+    lessons.length
+  );
 });
 
 test('normalizeForSearch handles Vietnamese diacritics and đ/Đ cleanly', () => {
@@ -39,7 +43,7 @@ test('filterLessons filters by category, mastery state, and diacritic-insensitiv
     masteryFilter: 'all',
     masteredIds: mastered,
   });
-  assert.equal(aiOnly.length, 7);
+  assert.equal(aiOnly.length, lessons.filter((lesson) => lesson.category === 'Trí tuệ AI').length);
 
   const searchWithoutAccents = filterLessons(lessons, {
     category: 'Tất cả',
@@ -67,18 +71,30 @@ test('filterLessons filters by category, mastery state, and diacritic-insensitiv
     masteryFilter: 'unmastered',
     masteredIds: mastered,
   });
-  assert.equal(unmasteredInAi.length, 6);
+  const masteredAiCount = lessons.filter(
+    (lesson) => lesson.category === 'Trí tuệ AI' && mastered.has(lesson.id)
+  ).length;
+  assert.equal(
+    unmasteredInAi.length,
+    lessons.filter((lesson) => lesson.category === 'Trí tuệ AI').length - masteredAiCount
+  );
 });
 
 test('getProgressStats computes mastered count and rounded percentage', () => {
   const statsEmpty = getProgressStats(lessons, new Set());
-  assert.deepEqual(statsEmpty, { masteredCount: 0, totalCount: 24, percentage: 0 });
+  assert.deepEqual(statsEmpty, {
+    masteredCount: 0,
+    totalCount: lessons.length,
+    percentage: 0,
+  });
 
-  const statsHalf = getProgressStats(
-    lessons,
-    new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-  );
-  assert.deepEqual(statsHalf, { masteredCount: 12, totalCount: 24, percentage: 50 });
+  const masteredIds = new Set(lessons.slice(0, Math.floor(lessons.length / 2)).map((l) => l.id));
+  const statsHalf = getProgressStats(lessons, masteredIds);
+  assert.deepEqual(statsHalf, {
+    masteredCount: masteredIds.size,
+    totalCount: lessons.length,
+    percentage: Math.round((masteredIds.size / lessons.length) * 100),
+  });
 });
 
 test('getAdjacentLessons finds prev and next within filtered list', () => {

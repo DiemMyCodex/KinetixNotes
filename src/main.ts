@@ -1,8 +1,11 @@
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import { mount } from 'svelte';
+import App from './App.svelte';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(<App />);
+const target = document.getElementById('root');
+if (target) {
+  mount(App, { target });
+}
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {

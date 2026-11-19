@@ -29,7 +29,8 @@ create policy "Only admin can insert lessons"
   for insert
   to authenticated
   with check (
-    lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
+    auth.uid() = user_id
+    and lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
   );
 
 drop policy if exists "Users can update their own lessons" on public.lessons;
@@ -39,10 +40,12 @@ create policy "Only admin can update lessons"
   for update
   to authenticated
   using (
-    lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
+    auth.uid() = user_id
+    and lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
   )
   with check (
-    lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
+    auth.uid() = user_id
+    and lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
   );
 
 drop policy if exists "Users can delete their own lessons" on public.lessons;
@@ -52,7 +55,8 @@ create policy "Only admin can delete lessons"
   for delete
   to authenticated
   using (
-    lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
+    auth.uid() = user_id
+    and lower(coalesce(auth.jwt() ->> 'email', '')) = 'diemmycodex@gmail.com'
   );
 
 create table if not exists public.user_progress (

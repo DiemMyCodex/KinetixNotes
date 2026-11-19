@@ -1,10 +1,10 @@
-import { Brain, Cpu, LayoutGrid, Sparkles, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Brain, Cpu, LayoutGrid, Sparkles, TrendingUp } from '@lucide/svelte';
 import type { CategoryFilter } from '../types/lesson';
 
 export interface CategoryMeta {
   label: CategoryFilter;
   short: string;
-  Icon: LucideIcon;
+  Icon: typeof LayoutGrid;
   tone: string;
 }
 

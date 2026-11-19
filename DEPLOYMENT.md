@@ -8,7 +8,7 @@ Tài liệu hướng dẫn chi tiết từng bước (step-by-step runbook) đ�
 
 | Thành phần | Định danh / Giá trị | Ghi chú |
 | :--- | :--- | :--- |
-| **Frontend Framework** | React 19 + TypeScript + Vite 8 + Tailwind CSS v4 | Build output: `dist/` |
+| **Frontend Framework** | Svelte 5 (runes) + TypeScript + Vite 8 + Tailwind CSS v4 | Build output: `dist/` |
 | **Hosting Platform** | Vercel Edge / Static Hosting | SPA rewrites qua `vercel.json` |
 | **Backend & Database** | Supabase (PostgreSQL 15+ & PostgREST API) | Hosted tại AWS Tokyo/Singapore |
 | **Supabase Project URL** | `https://fsrdqmraatuzhdzdbfrk.supabase.co` | Endpoint REST & Auth API |
@@ -263,7 +263,7 @@ Sau khi hoàn tất cấu hình, tiến hành chạy kịch bản kiểm thử t
 - [ ] Kiểm tra `sw.js`, `manifest.webmanifest`, `og.png`, `/icons/icon-192.png` trả 200 và đúng `Content-Type`.
 - [ ] Mở DevTools → Application → Manifest: không lỗi icon, có `name`, `theme_color`, `display: standalone`.
 
-> Khi thay đổi chiến lược cache của service worker, tăng hằng số `VERSION` trong `public/sw.js` để trình duyệt dọn cache cũ ở sự kiện `activate`.
+> `public/sw.js` dùng placeholder `__KINETIX_BUILD_VERSION__`; plugin `stamp-service-worker-version` trong `vite.config.ts` tự thay bằng hash của asset tại mỗi lần build. Không cần tăng tay hằng số `VERSION` nữa — chỉ cần deploy bản build mới là sự kiện `activate` dọn cache cũ.
 
 ---
 
@@ -275,5 +275,5 @@ Sau khi hoàn tất cấu hình, tiến hành chạy kịch bản kiểm thử t
 | **Lỗi `42501`** khi thêm bài học dù đã đăng nhập đúng email | Claim `email` trong JWT không khớp do chữ hoa/thường hoặc tài khoản chưa xác thực email | Vào Supabase Auth -> Users, kiểm tra email phải khớp chính xác `diemmycodex@gmail.com` và đã có thời gian *Confirmed at*. Đăng xuất và đăng nhập lại trên web để nhận JWT token mới. |
 | **Màn hình trắng hoặc không kết nối được Supabase trên Vercel** | Chưa cấu hình hoặc cấu hình sai biến môi trường `VITE_SUPABASE_*` | Kiểm tra lại mục Environment Variables trên Vercel, đảm bảo biến có tiền tố `VITE_` và thực hiện **Redeploy**. |
 | **Bấm link xác nhận email dẫn về `localhost` thay vì Vercel** | Chưa cập nhật `Site URL` trong Supabase Auth | Cập nhật `Site URL` và `Redirect URLs` tại Authentication -> URL Configuration thành domain Vercel. |
-| **Sau khi deploy vẫn thấy giao diện cũ** | Service worker đang phục vụ cache shell cũ | Mở DevTools → Application → Service Workers → **Update**, hoặc tăng `VERSION` trong `public/sw.js` rồi redeploy. |
+| **Sau khi deploy vẫn thấy giao diện cũ** | Service worker đang phục vụ cache shell cũ | Mở DevTools → Application → Service Workers → **Update**; bản build mới đã tự stamp version nên chỉ cần redeploy nếu chưa có bản mới. |
 | **Deep link `/bai/:id` trả về trang chủ** | Rewrite trong `vercel.json` bị thay đổi | Giữ `rewrites` về `/(.*)` → `/index.html`; không chặn nhầm `assets/`, `sw.js`, `manifest.webmanifest`. |

@@ -32,9 +32,9 @@ test('normalizeRemoteLesson parses snake_case Supabase row cleanly', () => {
   assert.equal(normalized.createdAt, '2026-11-16T05:00:00.000Z');
 });
 
-test('mergeCatalogLessons keeps 24 default lessons when Supabase table is empty', () => {
+test('mergeCatalogLessons keeps the full default catalog when Supabase table is empty', () => {
   const merged = mergeCatalogLessons(defaultLessons, []);
-  assert.equal(merged.length, 24);
+  assert.equal(merged.length, defaultLessons.length);
   assert.equal(merged[0].id, 1);
 });
 
@@ -51,11 +51,12 @@ test('mergeCatalogLessons preserves defaults and avoids ID collision when table 
     user_id: 'u-1',
   };
 
+  const nextSafeId = Math.max(...defaultLessons.map((lesson) => lesson.id)) + 1;
   const merged = mergeCatalogLessons(defaultLessons, [customLesson]);
-  assert.equal(merged.length, 25);
+  assert.equal(merged.length, defaultLessons.length + 1);
   assert.equal(merged[0].title, defaultLessons[0].title);
-  assert.equal(merged[24].id, 25);
-  assert.equal(merged[24].title, customLesson.title);
+  assert.equal(merged[defaultLessons.length].id, nextSafeId);
+  assert.equal(merged[defaultLessons.length].title, customLesson.title);
 });
 
 test('formatSupabaseAuthError translates auth messages to clear Vietnamese inline copy', () => {

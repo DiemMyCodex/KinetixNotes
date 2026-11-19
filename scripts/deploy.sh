@@ -307,16 +307,13 @@ fi
 # Bơm biến môi trường vào cả lúc build và runtime của Vercel
 ENV_FLAGS="-e VITE_SUPABASE_URL=$SUPABASE_URL -b VITE_SUPABASE_URL=$SUPABASE_URL -e VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY -b VITE_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
 
-TOKEN_FLAG=""
-if [ -n "$CUSTOM_VERCEL_TOKEN" ]; then
-  TOKEN_FLAG="--token $CUSTOM_VERCEL_TOKEN"
-fi
-
-DEPLOY_CMD="$VERCEL_BIN $DEPLOY_FLAGS $ENV_FLAGS $TOKEN_FLAG"
+# Vercel CLI đọc VERCEL_TOKEN từ môi trường. Không đưa token vào argv vì
+# argv lộ ra ở `ps` và trong log khi script echo lệnh dry-run.
+DEPLOY_CMD="$VERCEL_BIN $DEPLOY_FLAGS $ENV_FLAGS"
 
 DEPLOYED_URL=""
 if [ "$DRY_RUN" = true ]; then
-  echo "[DRY-RUN] Lệnh deploy sẽ được chạy:"
+  echo "[DRY-RUN] Lệnh deploy sẽ được chạy (token truyền qua env, không hiển thị):"
   echo "  $DEPLOY_CMD"
   DEPLOYED_URL="https://kinetix-notes-simulated.vercel.app"
   echo "[PASS] Mô phỏng deploy hoàn tất: $DEPLOYED_URL"
@@ -325,7 +322,7 @@ else
   TMP_OUT="$(mktemp 2>/dev/null || echo "/tmp/vercel_deploy_out.$$" || echo "${HOME}/.cache/vercel_deploy_out.$$")"
   
   # Thực thi và in trực tiếp ra console đồng thời lưu log
-  if $DEPLOY_CMD 2>&1 | tee "$TMP_OUT"; then
+  if VERCEL_TOKEN="$CUSTOM_VERCEL_TOKEN" $DEPLOY_CMD 2>&1 | tee "$TMP_OUT"; then
     DEPLOYED_URL=$(grep -oE "https://[a-zA-Z0-9.-]+\.vercel\.app" "$TMP_OUT" | tail -n 1 || true)
     rm -f "$TMP_OUT" 2>/dev/null || true
     echo "[PASS] Triển khai Vercel thành công!"

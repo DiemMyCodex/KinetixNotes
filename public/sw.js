@@ -1,5 +1,5 @@
-/* KinetixNotes offline shell — bump VERSION on breaking asset changes. */
-const VERSION = 'kinetix-v1';
+/* KinetixNotes offline shell — version is stamped by vite.config.ts at build time. */
+const VERSION = '__KINETIX_BUILD_VERSION__';
 const SHELL_CACHE = `${VERSION}-shell`;
 const ASSET_CACHE = `${VERSION}-assets`;
 const FONT_CACHE = `${VERSION}-fonts`;

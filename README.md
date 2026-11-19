@@ -34,11 +34,11 @@ Nền tảng học tập vi mô (Micro-learning) hiệu năng cao, cung cấp c�
 
 ## 2. Công Nghệ Sử Dụng
 
-- **Giao diện & Ứng dụng**: React 19, TypeScript, Vite 8, Tailwind CSS v4, Lucide Icons, Framer Motion (`motion`).
+- **Giao diện & Ứng dụng**: Svelte 5 (runes), TypeScript, Vite 8, Tailwind CSS v4, @lucide/svelte, Svelte transitions.
 - **Backend & Cơ sở dữ liệu**: Supabase (PostgreSQL 15+, Supabase Auth, Row-Level Security, PostgREST API).
 - **Hạ tầng triển khai**: Vercel Edge Network (cấu hình SPA Routing qua `vercel.json`).
 - **PWA**: Web App Manifest + service worker tự viết (`public/sw.js`), không phụ thuộc plugin.
-- **Kiểm thử**: `npm test` (Node test runner cho CLI thêm bài) + `npm run lint` (TypeScript).
+- **Kiểm thử**: `npm test` (`tsx --test`, chạy cả 3 file test) + `npm run lint` (`svelte-check`).
 
 ---
 
@@ -48,9 +48,10 @@ Nền tảng học tập vi mô (Micro-learning) hiệu năng cao, cung cấp c�
 KinetixNotes/
 ├── index.html                   # HTML entry point: meta, manifest, theme-color, OG
 ├── package.json                 # Danh sách thư viện phụ thuộc & lệnh thực thi
-├── tsconfig.json                # Cấu hình kiểm tra kiểu tĩnh TypeScript
+├── svelte.config.js             # vitePreprocess cho <script lang="ts">
+├── tsconfig.json                # Kiểm tra kiểu TypeScript + Svelte
 ├── vercel.json                  # SPA rewrites + cache/security headers
-├── vite.config.ts               # Bundler Vite, Tailwind v4, vendor chunks
+├── vite.config.ts               # Bundler Vite, Svelte, Tailwind v4, SW version stamping
 ├── DEPLOYMENT.md                # Runbook triển khai & vận hành
 ├── public/
 │   ├── manifest.webmanifest     # Metadata cài đặt PWA
@@ -60,19 +61,19 @@ KinetixNotes/
 ├── supabase/
 │   └── schema.sql               # Bảng lessons, user_progress & chính sách RLS
 └── src/
-    ├── App.tsx                  # State, route, phím tắt, streak, lazy views
-    ├── main.tsx                 # React DOM entry + đăng ký service worker
+    ├── App.svelte               # State (runes), route, phím tắt, streak, lazy views
+    ├── main.ts                  # Svelte mount + đăng ký service worker
     ├── index.css                # Design tokens, primitive classes & motion
     ├── components/
-    │   ├── AddLessonModal.tsx   # Modal tạo bài học mới (Admin)
-    │   ├── AuthView.tsx         # Đăng nhập / đăng ký (split layout)
-    │   ├── CategoryTabs.tsx     # Lọc 4 chuyên mục, icon + màu riêng
-    │   ├── CommandPalette.tsx   # Tìm bài + chạy lệnh (⌘K)
-    │   ├── LessonReader.tsx     # Trình đọc, quiz, chia sẻ, vuốt chuyển bài
-    │   ├── LibrarySidebar.tsx   # Danh sách, tìm kiếm, vòng tiến độ
-    │   ├── MobileTabBar.tsx     # Điều hướng đáy trên di động
-    │   ├── ShortcutsDialog.tsx  # Bảng phím tắt (?)
-    │   └── TopHeader.tsx        # Header, scope filter, streak, theme, auth
+    │   ├── AddLessonModal.svelte # Modal tạo bài học mới (Admin)
+    │   ├── AuthView.svelte      # Đăng nhập / đăng ký (split layout)
+    │   ├── CategoryTabs.svelte  # Lọc 4 chuyên mục, icon + màu riêng
+    │   ├── CommandPalette.svelte # Tìm bài + chạy lệnh (⌘K)
+    │   ├── LessonReader.svelte  # Trình đọc, quiz, chia sẻ, vuốt chuyển bài
+    │   ├── LibrarySidebar.svelte # Danh sách, tìm kiếm, vòng tiến độ
+    │   ├── MobileTabBar.svelte  # Điều hướng đáy trên di động
+    │   ├── ShortcutsDialog.svelte # Bảng phím tắt (?)
+    │   └── TopHeader.svelte     # Header, scope filter, streak, theme, auth
     ├── data/
     │   └── lessons.json         # Kho bài học mặc định (offline fallback)
     ├── lib/
@@ -80,7 +81,7 @@ KinetixNotes/
     │   ├── router.ts            # Parse `/bai/:id`, `/login`, `/register`
     │   ├── streak.ts            # Chuỗi ngày đọc lưu localStorage
     │   ├── supabase.ts          # Supabase client từ biến môi trường
-    │   └── useDialogA11y.ts     # Focus trap, Esc, scroll lock, focus restore
+    │   └── dialogA11y.ts        # Svelte action: focus trap, Esc, scroll lock, focus restore
     ├── services/
     │   ├── supabaseHelpers.ts   # Chuẩn hóa dữ liệu, kiểm tra quyền admin
     │   └── supabaseSync.ts      # PostgREST: lessons & user progress
@@ -105,7 +106,7 @@ KinetixNotes/
 ## 4. Hướng Dẫn Cài Đặt & Phát Triển Cục Bộ (Local Development)
 
 ### Yêu cầu tiên quyết:
-- **Node.js**: Phiên bản 18 trở lên (khuyến nghị Node 20+).
+- **Node.js**: `>=22.0.0` (Supabase JS yêu cầu 22+; Vite 8 yêu cầu `^20.19 || >=22.12`). `npm` 9+.
 - **npm**: Phiên bản 9 trở lên (hoặc `bun` / `pnpm`).
 
 ### Các bước khởi chạy:
